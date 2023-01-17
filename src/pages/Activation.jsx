@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -9,24 +9,30 @@ import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { useDispatch, useSelector } from "react-redux";
 import { activate } from "../redux/slices/userSlice";
-import { useNavigate } from "react-router-dom";
 
 const Activation = () => {
   const dispatch = useDispatch();
-  const navigate = useNavigate();
+  const [activationData, setActivationData] = useState({
+    username: "",
+    pin: ""
+  });
+
+  const { user } = useSelector((state) => state.user);
 
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    const { user } = useSelector((state) => state.user);
     const activation = {
       username: user.username,
       pin: data.get("pin")
     };
-    dispatch(activate(activation));
-    const { userActivated } = useSelector((state) => state.user);
-    if (userActivated.activated) navigate("/proizvodi");
+    setActivationData(activation);
   };
+
+  useEffect(() => {
+    if (activationData.pin) dispatch(activate(activationData));
+  }, [activationData]);
+
   return (
     <Container component="main" maxWidth="xs">
       <CssBaseline />

@@ -13,9 +13,7 @@ export const login = (username, password) =>
   });
 
 export const register = (user) =>
-  instance.post("/auth/register", user).then(res => {
-
-  });
+  instance.post("/auth/register", user).then(res => res.data);
 
 export const activate = (username, pin) =>
   instance.post("/auth/activate", { username, pin }).then((res) => {

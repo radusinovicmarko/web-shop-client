@@ -36,7 +36,7 @@ function App () {
         <Header />
         <Routes>
           <Route exact path="/" element={<div>A</div>} />
-          <Route exact path="/registracija" element={ authenticated ? <Navigate to={"/"} /> : <Register />} />
+          <Route exact path="/registracija" element={ authenticated ? <Navigate to={"/"} /> : (pendingActivation ? <Navigate to={"/aktivacija"} /> : <Register />)} />
           <Route exact path="/prijava" element={authenticated ? <Navigate to={"/"} /> : (pendingActivation ? <Navigate to={"/aktivacija"} /> : <Login />)} />
           <Route exact path="/aktivacija" element={pendingActivation ? <Activation /> : <Navigate to={"/"} />} />
           <Route exact path="/odjava" element={authenticated ? <Logout /> : <Navigate to={"/"} />} />

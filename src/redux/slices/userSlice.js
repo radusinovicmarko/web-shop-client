@@ -9,6 +9,10 @@ export const activate = createAsyncThunk("user/activate", ({ username, pin }, th
   authService.activate(username, pin)
 );
 
+export const register = createAsyncThunk("user/register", (user, thunkAPI) =>
+  authService.register(user)
+);
+
 const logoutAction = (state, action) => {
   authService.logout();
   state.activated = false;
@@ -21,9 +25,9 @@ const logoutAction = (state, action) => {
 const onSuccessAuth = (state, action) => {
   state.authenticationFailed = false;
   state.loading = false;
-  if (action.payload.auth) {
+  if (action.payload.activate) {
     state.pendingActivation = true;
-    state.user.username = action.payload.username;
+    state.user = { username: action.payload.username };
   } else {
     state.pendingActivation = false;
     state.authenticated = true;
@@ -57,6 +61,12 @@ const userSlice = createSlice({
       state.authenticationFailed = true;
       state.loading = false;
       state.pendingActivation = true;
+    },
+    [register.fulfilled]: (state, action) => {
+      state.authenticationFailed = false;
+      state.loading = false;
+      state.pendingActivation = true;
+      state.user = { username: action.payload.username };
     }
   }
 });

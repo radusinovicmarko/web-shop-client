@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -11,14 +11,34 @@ import Container from "@mui/material/Container";
 import { IconButton, InputAdornment } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { Link } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { register } from "../redux/slices/userSlice";
 
 const Register = () => {
+  const dispatch = useDispatch();
+
   const [showPassword, setShowPassword] = useState(false);
   const handleClickShowPassword = () => setShowPassword(!showPassword);
   const handleMouseDownPassword = () => setShowPassword(!showPassword);
+  const [user, setUser] = useState(null);
+
   const handleSubmit = (event) => {
-    console.log(event);
+    event.preventDefault();
+    const data = new FormData(event.currentTarget);
+    setUser({
+      firstName: data.get("firstName"),
+      lastName: data.get("lastName"),
+      username: data.get("username"),
+      email: data.get("email"),
+      password: data.get("password"),
+      contactPhone: data.get("contactPhone"),
+      location: data.get("location")
+    });
   };
+
+  useEffect(() => {
+    dispatch(register(user));
+  }, [user]);
 
   return (
     <Container component="main" maxWidth="xs">
@@ -37,7 +57,7 @@ const Register = () => {
         <Typography component="h1" variant="h5">
           Registracija
         </Typography>
-        <Box component="form" onSubmit={handleSubmit} sx={{ mt: 3 }}>
+        <Box component="form" method="post" onSubmit={handleSubmit} sx={{ mt: 3 }}>
           <Grid container spacing={2}>
             <Grid item xs={12} sm={6}>
               <TextField

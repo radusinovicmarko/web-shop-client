@@ -58,7 +58,7 @@ const Login = () => {
         <Typography component="h1" variant="h5">
           Prijava
         </Typography>
-        <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+        <Box component="form" method="post" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
           <TextField
             margin="normal"
             required
