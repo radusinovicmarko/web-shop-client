@@ -7,6 +7,7 @@ import Register from "./pages/Register";
 import Login from "./pages/Login";
 import Activation from "./pages/Activation";
 import { useSelector } from "react-redux";
+import Logout from "./pages/Logout";
 
 function App () {
   const darkTheme = createTheme({
@@ -38,6 +39,7 @@ function App () {
           <Route exact path="/registracija" element={ authenticated ? <Navigate to={"/"} /> : <Register />} />
           <Route exact path="/prijava" element={authenticated ? <Navigate to={"/"} /> : (pendingActivation ? <Navigate to={"/aktivacija"} /> : <Login />)} />
           <Route exact path="/aktivacija" element={pendingActivation ? <Activation /> : <Navigate to={"/"} />} />
+          <Route exact path="/odjava" element={authenticated ? <Logout /> : <Navigate to={"/"} />} />
           <Route path="*" element={<Navigate to={"/"} />} />
         </Routes>
       </ThemeProvider>
