@@ -37,7 +37,7 @@ const Register = () => {
   };
 
   useEffect(() => {
-    dispatch(register(user));
+    if (user) dispatch(register(user));
   }, [user]);
 
   return (
