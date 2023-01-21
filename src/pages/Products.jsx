@@ -17,6 +17,7 @@ import productsService from "../services/products.service";
 import SearchIcon from "@mui/icons-material/Search";
 import CategoryFilter from "../components/CategoryFilter";
 import AttributeSearchModal from "../components/AttributeSearchModal";
+import FilterAltOffOutlinedIcon from "@mui/icons-material/FilterAltOffOutlined";
 
 const Transition = (props) => {
   return <Slide {...props} direction="left" />;
@@ -80,7 +81,6 @@ const Products = () => {
   }, [page]);
 
   const apply = (categoryId) => {
-    console.log(categoryId);
     setCategoryId(categoryId);
     setPage({ page: 0 });
   };
@@ -88,6 +88,10 @@ const Products = () => {
   const reset = () => {
     setCategoryId(null);
     setPage({ page: 0 });
+  };
+
+  const attributeSearch = (attrbuteId, value, from, to) => {
+    console.log(attrbuteId + " " + value + " " + from + " " + to);
   };
 
   return (
@@ -109,13 +113,15 @@ const Products = () => {
           </Grid>
           <Grid item xs={1} md={1} lg={1}>
             <Stack direction={"row"}>
-              <CategoryFilter
-                onApply={apply}
-                onReset={reset}
-              />
+              <CategoryFilter onApply={apply} />
               <Tooltip title="Dodatna pretraga" sx={{ mt: 1 }}>
                 <IconButton onClick={() => setOpenModal(true)}>
                   <SearchIcon />
+                </IconButton>
+              </Tooltip>
+              <Tooltip title="Obrišite filtere" sx={{ mt: 1 }}>
+                <IconButton onClick={reset}>
+                  <FilterAltOffOutlinedIcon />
                 </IconButton>
               </Tooltip>
             </Stack>
@@ -133,7 +139,7 @@ const Products = () => {
           onChange={(_, page) => setPage({ page: page - 1 })}
         />
       </Stack>
-      <AttributeSearchModal open={openModal} onApply={(categoryId) => console.log(categoryId)} onClose={() => setOpenModal(false)} />
+      <AttributeSearchModal open={openModal} onApply={attributeSearch} onClose={() => setOpenModal(false)} />
       <Snackbar
         anchorOrigin={{
           vertical: snackbarState.vertical,

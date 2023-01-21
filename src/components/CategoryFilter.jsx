@@ -12,10 +12,10 @@ import TreeItem from "@mui/lab/TreeItem";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import categoryService from "../services/category.service";
-import { Button, Typography } from "@mui/material";
+import { Button, Divider, Typography } from "@mui/material";
 
 const CategoryFilter = (props) => {
-  const { onApply, onReset } = props;
+  const { onApply } = props;
   const [anchorEl, setAnchorEl] = useState(null);
   const [categories, setCategories] = useState([]);
   const [categoryId, setCategoryId] = useState(0);
@@ -34,12 +34,6 @@ const CategoryFilter = (props) => {
     onApply(categoryId);
     handleClose();
     setCategoryId(null);
-  };
-
-  const reset = () => {
-    onReset();
-    setCategoryId(null);
-    handleClose();
   };
 
   useEffect(() => {
@@ -141,14 +135,10 @@ const CategoryFilter = (props) => {
             {getTreeItemsFromData(categories)}
           </TreeView>
         </MenuItem>
+        <Divider />
         <MenuItem onClick={apply}>
-          <Button>
+          <Button color="inherit">
             Filtrirajte
-          </Button>
-        </MenuItem>
-        <MenuItem onClick={reset}>
-          <Button>
-            {"Obrišite filtere"}
           </Button>
         </MenuItem>
       </Menu>
@@ -157,8 +147,7 @@ const CategoryFilter = (props) => {
 };
 
 CategoryFilter.propTypes = {
-  onApply: PropTypes.func,
-  onReset: PropTypes.func
+  onApply: PropTypes.func
 };
 
 export default CategoryFilter;

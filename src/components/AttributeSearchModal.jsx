@@ -1,11 +1,19 @@
 /* eslint-disable react/no-children-prop */
-import { Box, Button, Modal, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  MenuItem,
+  Modal,
+  TextField,
+  Typography
+} from "@mui/material";
 import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import { TreeItem, TreeView } from "@mui/lab";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import categoryService from "../services/category.service";
+import { Stack } from "@mui/system";
 
 const style = {
   position: "absolute",
@@ -22,7 +30,14 @@ const style = {
 const AttributeSearchModal = (props) => {
   const { onApply, onClose, open } = props;
   const [categories, setCategories] = useState([]);
-  const [categoryId, setCategoryId] = useState(0);
+  const [, setCategoryId] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [attributes, setAttributes] = useState([]);
+  const [selectedAttributeId, setSelectedAttributeId] = useState({ id: "" });
+  const [selectedAttribute, setSelectedAttribute] = useState(null);
+  const [value, setValue] = useState("");
+  const [from, setFrom] = useState("");
+  const [to, setTo] = useState("");
 
   useEffect(() => {
     categoryService
@@ -30,6 +45,26 @@ const AttributeSearchModal = (props) => {
       .then((res) => setCategories(res.data))
       .catch(() => console.log("err"));
   }, []);
+
+  useEffect(() => {
+    if (selectedCategory) setAttributes(selectedCategory.attributes);
+  }, [selectedCategory]);
+
+  useEffect(() => {
+    if (selectedAttributeId.id !== "") {
+      setSelectedAttribute(
+        selectedCategory.attributes.filter(
+          (a) => a.id === selectedAttributeId.id
+        )[0]
+      );
+    }
+  }, [selectedAttributeId]);
+
+  const apply = () => {
+    if (selectedAttributeId.id !== "") {
+      onApply(selectedAttributeId.id, value, from, to);
+    }
+  };
 
   const getTreeItemsFromData = (treeItems) => {
     return treeItems.map((treeItemData) => {
@@ -44,7 +79,12 @@ const AttributeSearchModal = (props) => {
             nodeId={`${treeItemData.id}`}
             label={treeItemData.name}
             children={children}
-            onClick={() => setCategoryId(treeItemData.id)}
+            onClick={() => {
+              setSelectedAttributeId({ id: "" });
+              setSelectedAttribute(null);
+              setCategoryId(treeItemData.id);
+              setSelectedCategory(treeItemData);
+            }}
           />
         );
       }
@@ -54,7 +94,12 @@ const AttributeSearchModal = (props) => {
           nodeId={`${treeItemData.id}`}
           label={treeItemData.name}
           children={children}
-          onClick={() => setCategoryId(treeItemData.id)}
+          onClick={() => {
+            setSelectedAttributeId({ id: "" });
+            setSelectedAttribute(null);
+            setCategoryId(treeItemData.id);
+            setSelectedCategory(treeItemData);
+          }}
         />
       );
     });
@@ -62,25 +107,92 @@ const AttributeSearchModal = (props) => {
 
   return (
     <Modal
-        open={open}
-        onClose={onClose}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-      >
-        <Box sx={style}>
-          <Typography variant="h6">
-            Kategorije
-          </Typography>
-          <TreeView
-            defaultCollapseIcon={<ExpandMoreIcon />}
-            defaultExpandIcon={<ChevronRightIcon />}
-            // sx={{ height: 240, flexGrow: 1, maxWidth: 400, overflowY: "auto" }}
-          >
-            {getTreeItemsFromData(categories)}
-          </TreeView>
-          <Button onClick={() => onApply(categoryId)}>Pretraga</Button>
-        </Box>
-      </Modal>
+      open={open}
+      onClose={onClose}
+      aria-labelledby="modal-modal-title"
+      aria-describedby="modal-modal-description"
+    >
+      <Box sx={style}>
+        <Typography sx={{ textAlign: "center" }} variant="h6">
+          Izaberite kategoriju
+        </Typography>
+        <br />
+        <TreeView
+          defaultCollapseIcon={<ExpandMoreIcon />}
+          defaultExpandIcon={<ChevronRightIcon />}
+        >
+          {getTreeItemsFromData(categories)}
+        </TreeView>
+        <br />
+        <br />
+        <TextField
+          value={selectedAttributeId.id}
+          size="small"
+          label="Izaberite atribut"
+          select
+          sx={{
+            width: "100%"
+          }}
+          onChange={(event) => {
+            event.preventDefault();
+            setSelectedAttributeId({ id: event.target.value });
+          }}
+        >
+          {attributes.map((attribute) => (
+            <MenuItem key={attribute.id} value={attribute.id}>
+              {attribute.name}
+            </MenuItem>
+          ))}
+        </TextField>
+        <Stack rowGap={2}>
+          <br />
+          {selectedAttribute?.type === "String" && (
+            <TextField
+              size="small"
+              id="outlined-basic"
+              label="Vrijednost"
+              variant="outlined"
+              value={value}
+              onChange={(event) => {
+                event.preventDefault();
+                setValue(event.target.value);
+              }}
+            />
+          )}
+          {selectedAttribute?.type === "Integer" && (
+            <Stack direction="row" columnGap={1}>
+              <TextField
+                type={"number"}
+                size="small"
+                id="outlined-basic"
+                label="Od"
+                variant="outlined"
+                value={from}
+                onChange={(event) => {
+                  event.preventDefault();
+                  setFrom(event.target.value);
+                }}
+              />
+              <TextField
+                type={"number"}
+                size="small"
+                id="outlined-basic"
+                label="Do"
+                variant="outlined"
+                value={to}
+                onChange={(event) => {
+                  event.preventDefault();
+                  setTo(event.target.value);
+                }}
+              />
+            </Stack>
+          )}
+          <Button onClick={apply} color="inherit">
+            Pretraga
+          </Button>
+        </Stack>
+      </Box>
+    </Modal>
   );
 };
 
