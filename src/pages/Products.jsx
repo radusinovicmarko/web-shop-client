@@ -39,38 +39,31 @@ const Products = () => {
     transition: Transition
   });
   const [openModal, setOpenModal] = useState(false);
+  const [attributeSearchData, setAttributeSearchData] = useState({
+    attributeId: null,
+    value: null,
+    from: null,
+    to: null
+  });
+  const [title, setTitle] = useState("");
 
   const pageSize = 1;
 
   const handleClose = () => setSnackbarState({ ...snackbarState, open: false });
 
+  const onSuccessfulResponse = (data) => {
+    setTotal({
+      totalElements: data.totalElements,
+      totalPages: data.totalPages
+    });
+    setProducts(data.content);
+  };
+
   useEffect(() => {
-    categoryId !== null
-      ? productsService
+    if (categoryId !== null) {
+      productsService
         .getByCategory(categoryId, page.page, pageSize)
-        .then((res) => {
-          setTotal({
-            totalElements: res.data.totalElements,
-            totalPages: res.data.totalPages
-          });
-          setProducts(res.data.content);
-        })
-        .catch(() =>
-          setSnackbarState({
-            ...snackbarState,
-            open: true,
-            message: "Greška prilikom učitavanja."
-          })
-        )
-      : productsService
-        .getAll(page.page, pageSize)
-        .then((res) => {
-          setTotal({
-            totalElements: res.data.totalElements,
-            totalPages: res.data.totalPages
-          });
-          setProducts(res.data.content);
-        })
+        .then((res) => onSuccessfulResponse(res.data))
         .catch(() =>
           setSnackbarState({
             ...snackbarState,
@@ -78,28 +71,79 @@ const Products = () => {
             message: "Greška prilikom učitavanja."
           })
         );
+    } else if (attributeSearchData.attributeId !== null) {
+      productsService
+        .getByAttribute(
+          attributeSearchData.attributeId,
+          attributeSearchData.value,
+          attributeSearchData.from,
+          attributeSearchData.to,
+          page.page,
+          pageSize
+        )
+        .then((res) => onSuccessfulResponse(res.data))
+        .catch(() =>
+          setSnackbarState({
+            ...snackbarState,
+            open: true,
+            message: "Greška prilikom učitavanja."
+          })
+        );
+    } else {
+      productsService
+        .getAll(title, page.page, pageSize)
+        .then((res) => onSuccessfulResponse(res.data))
+        .catch(() =>
+          setSnackbarState({
+            ...snackbarState,
+            open: true,
+            message: "Greška prilikom učitavanja."
+          })
+        );
+    }
   }, [page]);
 
   const apply = (categoryId) => {
     setCategoryId(categoryId);
+    setAttributeSearchData({
+      ...attributeSearchData,
+      attributeId: null
+    });
     setPage({ page: 0 });
   };
 
   const reset = () => {
+    setTitle("");
     setCategoryId(null);
+    setAttributeSearchData({
+      ...attributeSearchData,
+      attributeId: null
+    });
     setPage({ page: 0 });
   };
 
-  const attributeSearch = (attrbuteId, value, from, to) => {
-    console.log(attrbuteId + " " + value + " " + from + " " + to);
+  const attributeSearch = (attributeId, value, from, to) => {
+    setAttributeSearchData({
+      attributeId,
+      value,
+      from,
+      to
+    });
+    setCategoryId(null);
+    setPage({ page: 0 });
   };
 
   return (
     <Box sx={{ m: 4 }}>
       <Stack spacing={2}>
-        <Grid container spacing={2} sx={{ alignItems: "center", justifyContent: "center" }}>
+        <Grid
+          container
+          spacing={2}
+          sx={{ alignItems: "center", justifyContent: "center" }}
+        >
           <Grid item xs={12} md={6} lg={4}>
             <TextField
+              value={title}
               label="Pretražite po naslovu"
               sx={{ width: "100%" }}
               InputProps={{
@@ -108,6 +152,15 @@ const Products = () => {
                     <SearchIcon />
                   </InputAdornment>
                 )
+              }}
+              onChange={(event) => {
+                setTitle(event.target.value);
+                setCategoryId(null);
+                setAttributeSearchData({
+                  ...attributeSearchData,
+                  attributeId: null
+                });
+                setPage({ page: 0 });
               }}
             ></TextField>
           </Grid>
@@ -135,11 +188,16 @@ const Products = () => {
           ))}
         </Grid>
         <Pagination
+          page={page.page + 1}
           count={total.totalPages}
           onChange={(_, page) => setPage({ page: page - 1 })}
         />
       </Stack>
-      <AttributeSearchModal open={openModal} onApply={attributeSearch} onClose={() => setOpenModal(false)} />
+      <AttributeSearchModal
+        open={openModal}
+        onApply={attributeSearch}
+        onClose={() => setOpenModal(false)}
+      />
       <Snackbar
         anchorOrigin={{
           vertical: snackbarState.vertical,

@@ -63,6 +63,7 @@ const AttributeSearchModal = (props) => {
   const apply = () => {
     if (selectedAttributeId.id !== "") {
       onApply(selectedAttributeId.id, value, from, to);
+      onClose();
     }
   };
 
