@@ -18,8 +18,11 @@ export const getByAttribute = (attributeId, value, from, to, page, size) => {
   return instance.get(`${url}?${query}`);
 };
 
+export const get = (id) => instance.get(`/products/${id}`);
+
 export default {
   getAll,
   getByCategory,
-  getByAttribute
+  getByAttribute,
+  get
 };
