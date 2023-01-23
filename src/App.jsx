@@ -12,6 +12,7 @@ import Products from "./pages/Products";
 import ProductDetails from "./pages/ProductDetails";
 import { CssBaseline } from "@mui/material";
 import { state } from "./redux/slices/userSlice";
+import Profile from "./pages/Profile";
 
 function App () {
   const darkTheme = createTheme({
@@ -29,13 +30,13 @@ function App () {
     }
   });
 
-  const { pendingActivation, authenticated } = useSelector((state) => state.user);
-
   const dispatch = useDispatch();
 
   useEffect(() => {
     dispatch(state());
   }, []);
+
+  const { pendingActivation, authenticated } = useSelector((state) => state.user);
 
   return (
     <Router>
@@ -46,6 +47,7 @@ function App () {
           <Route exact path="/" element={<Products />} />
           <Route exact path="/proizvodi" element={<Products />} />
           <Route exact path="/proizvodi/:id" element={<ProductDetails />} />
+          <Route exact path="/profil" element={authenticated ? <Profile /> : <Navigate to={"/prijava"} />} />
           <Route exact path="/registracija" element={ authenticated ? <Navigate to={"/"} /> : (pendingActivation ? <Navigate to={"/aktivacija"} /> : <Register />)} />
           <Route exact path="/prijava" element={authenticated ? <Navigate to={"/"} /> : (pendingActivation ? <Navigate to={"/aktivacija"} /> : <Login />)} />
           <Route exact path="/aktivacija" element={pendingActivation ? <Activation /> : <Navigate to={"/"} />} />

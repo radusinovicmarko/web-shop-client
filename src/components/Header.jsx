@@ -34,39 +34,46 @@ const Header = () => {
       key: 1
     },
     {
+      link: "/novi-proizvod",
+      title: "Novi proizvod",
+      auth: true,
+      nonAuth: false,
+      key: 2
+    },
+    {
       link: "/profil",
       title: "Profil",
       auth: true,
       nonAuth: false,
-      key: 2
+      key: 3
     },
     {
       link: "/korisnicka-podrska",
       title: "Korisnička podrška",
       auth: true,
       nonAuth: false,
-      key: 3
+      key: 4
     },
     {
       link: "/prijava",
       title: "Prijava",
       auth: false,
       nonAuth: true,
-      key: 4
+      key: 5
     },
     {
       link: "/registracija",
       title: "Registracija",
       auth: false,
       nonAuth: true,
-      key: 5
+      key: 6
     },
     {
       link: "/odjava",
       title: "Odjava",
       auth: true,
       nonAuth: false,
-      key: 6
+      key: 7
     }
   ];
 
@@ -150,7 +157,7 @@ const Header = () => {
             IP WebShop
           </Typography>
           <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
-            {pages.slice(0, 3).map((page) => (
+            {pages.slice(0, 4).map((page) => (
               ((page.auth && authenticated) || (!page.auth && !authenticated) || (!page.auth && !page.nonAuth)) && <Link
                 to={page.link}
                 key={page.key}
@@ -164,7 +171,7 @@ const Header = () => {
           </Box>
 
           <Box sx={{ flexGrow: 0, display: { xs: "none", md: "flex" }, position: "absolute", right: "10px" }}>
-            {pages.slice(3, 6).map((page) => (
+            {pages.slice(4, 7).map((page) => (
               ((page.auth && authenticated) || (!page.auth && !authenticated) || (!page.auth && !page.nonAuth)) && <Link
                 to={page.link}
                 key={page.key}

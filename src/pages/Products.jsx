@@ -183,7 +183,7 @@ const Products = () => {
         <Grid container spacing={2}>
           {products.map((p) => (
             <Grid key={p.id} item xs={12} sm={6} md={4} lg={3}>
-              <ProductCard product={p} />
+              <ProductCard product={p} deletable={false} />
             </Grid>
           ))}
         </Grid>

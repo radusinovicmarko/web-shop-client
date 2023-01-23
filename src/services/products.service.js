@@ -23,10 +23,13 @@ export const get = (id) => instance.get(`/products/${id}`);
 
 export const addComment = (productId, comment) => securedInstance.post(`/products/${productId}/comments`, comment);
 
+export const deleteProduct = (id) => securedInstance.delete(`/products/${id}`);
+
 export default {
   getAll,
   getByCategory,
   getByAttribute,
   get,
-  addComment
+  addComment,
+  deleteProduct
 };
