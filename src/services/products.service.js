@@ -1,6 +1,7 @@
 import base from "./base.service";
 
 const instance = base.service(false);
+const securedInstance = base.service(true);
 
 export const getAll = (title, page, size) => {
   let query = `page=${page}&size=${size}`;
@@ -20,9 +21,12 @@ export const getByAttribute = (attributeId, value, from, to, page, size) => {
 
 export const get = (id) => instance.get(`/products/${id}`);
 
+export const addComment = (productId, comment) => securedInstance.post(`/products/${productId}/comments`, comment);
+
 export default {
   getAll,
   getByCategory,
   getByAttribute,
-  get
+  get,
+  addComment
 };

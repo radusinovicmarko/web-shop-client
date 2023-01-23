@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import "./App.css";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { Route, BrowserRouter as Router, Routes, Navigate } from "react-router-dom";
@@ -6,11 +6,12 @@ import Header from "./components/Header";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
 import Activation from "./pages/Activation";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Logout from "./pages/Logout";
 import Products from "./pages/Products";
 import ProductDetails from "./pages/ProductDetails";
 import { CssBaseline } from "@mui/material";
+import { state } from "./redux/slices/userSlice";
 
 function App () {
   const darkTheme = createTheme({
@@ -28,10 +29,13 @@ function App () {
     }
   });
 
-  const { pendingActivation, authenticated } = useSelector((state) => {
-    // console.log(JSON.stringify(state.user));
-    return state.user;
-  });
+  const { pendingActivation, authenticated } = useSelector((state) => state.user);
+
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(state());
+  }, []);
 
   return (
     <Router>

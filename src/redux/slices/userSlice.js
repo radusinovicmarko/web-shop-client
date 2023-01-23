@@ -5,6 +5,8 @@ export const login = createAsyncThunk("user/login", ({ username, password }, thu
   authService.login(username, password)
 );
 
+export const state = createAsyncThunk("user/state", () => authService.state());
+
 export const activate = createAsyncThunk("user/activate", ({ username, pin }, thunkAPI) =>
   authService.activate(username, pin)
 );
@@ -52,10 +54,17 @@ const userSlice = createSlice({
       state.loading = true;
     },
     [login.rejected]: (state, action) => {
+      state.authenticated = false;
       state.authenticationFailed = true;
       state.loading = false;
     },
     [login.fulfilled]: onSuccessAuth,
+    [state.fulfilled]: onSuccessAuth,
+    [state.rejected]: (state, action) => {
+      state.authenticated = false;
+      state.authenticationFailed = true;
+      state.loading = false;
+    },
     [activate.fulfilled]: onSuccessAuth,
     [activate.rejected]: (state, action) => {
       state.authenticationFailed = true;

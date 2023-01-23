@@ -179,55 +179,6 @@ const Header = () => {
         </Toolbar>
       </Container>
     </AppBar>
-    /* <AppBar position="static">
-      <Container maxWidth="xl">
-        <Toolbar disableGutters>
-          <Typography
-            variant="h6"
-            noWrap
-            component={Link}
-            to="/"
-            sx={{
-              mr: 2,
-              display: { xs: "none", md: "flex" },
-              fontWeight: 700,
-              color: "inherit",
-              textDecoration: "none"
-            }}
-          >
-            IP WebShop
-          </Typography>
-
-          <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
-            {pages.map((page) => (
-              <Link to={page.link} key={page.key} style={{ textDecoration: "none" }}>
-              <Button
-                sx={{ my: 2, color: "white", display: "block" }}
-              >
-                {page.title}
-              </Button>
-            </Link>
-            ))}
-          </Box>
-          <Box sx={{ flexGrow: 1, display: "flex", position: "absolute", right: "10px" }}>
-            <Link to={"/prijava"} key={1} style={{ textDecoration: "none" }}>
-              <Button
-                sx={{ my: 2, color: "white", display: "block" }}
-              >
-                {"Prijava"}
-              </Button>
-            </Link>
-            <Link to={"/registracija"} key={2} style={{ textDecoration: "none" }}>
-              <Button
-                sx={{ my: 2, color: "white", display: "block" }}
-              >
-                {"Registracija"}
-              </Button>
-            </Link>
-          </Box>
-        </Toolbar>
-      </Container>
-    </AppBar> */
   );
 };
 
