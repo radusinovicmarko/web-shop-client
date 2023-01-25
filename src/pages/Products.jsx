@@ -1,12 +1,9 @@
 import {
-  Alert,
   Box,
   Grid,
   IconButton,
   InputAdornment,
   Pagination,
-  Slide,
-  Snackbar,
   TextField,
   Tooltip
 } from "@mui/material";
@@ -18,10 +15,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import CategoryFilter from "../components/CategoryFilter";
 import AttributeSearchModal from "../components/AttributeSearchModal";
 import FilterAltOffOutlinedIcon from "@mui/icons-material/FilterAltOffOutlined";
-
-const Transition = (props) => {
-  return <Slide {...props} direction="left" />;
-};
+import CustomSnackbar from "../components/CustomSnackbar";
 
 const Products = () => {
   const [page, setPage] = useState({ page: 0 });
@@ -33,10 +27,8 @@ const Products = () => {
   });
   const [snackbarState, setSnackbarState] = useState({
     open: false,
-    vertical: "bottom",
-    horizontal: "right",
     message: "",
-    transition: Transition
+    type: "error"
   });
   const [openModal, setOpenModal] = useState(false);
   const [attributeSearchData, setAttributeSearchData] = useState({
@@ -48,8 +40,6 @@ const Products = () => {
   const [title, setTitle] = useState("");
 
   const pageSize = 1;
-
-  const handleClose = () => setSnackbarState({ ...snackbarState, open: false });
 
   const onSuccessfulResponse = (data) => {
     setTotal({
@@ -66,9 +56,9 @@ const Products = () => {
         .then((res) => onSuccessfulResponse(res.data))
         .catch(() =>
           setSnackbarState({
-            ...snackbarState,
             open: true,
-            message: "Greška prilikom učitavanja."
+            message: "Greška prilikom učitavanja.",
+            type: "error"
           })
         );
     } else if (attributeSearchData.attributeId !== null) {
@@ -84,9 +74,9 @@ const Products = () => {
         .then((res) => onSuccessfulResponse(res.data))
         .catch(() =>
           setSnackbarState({
-            ...snackbarState,
             open: true,
-            message: "Greška prilikom učitavanja."
+            message: "Greška prilikom učitavanja.",
+            type: "error"
           })
         );
     } else {
@@ -95,9 +85,9 @@ const Products = () => {
         .then((res) => onSuccessfulResponse(res.data))
         .catch(() =>
           setSnackbarState({
-            ...snackbarState,
             open: true,
-            message: "Greška prilikom učitavanja."
+            message: "Greška prilikom učitavanja.",
+            type: "error"
           })
         );
     }
@@ -198,7 +188,7 @@ const Products = () => {
         onApply={attributeSearch}
         onClose={() => setOpenModal(false)}
       />
-      <Snackbar
+      {/* <Snackbar
         anchorOrigin={{
           vertical: snackbarState.vertical,
           horizontal: snackbarState.horizontal
@@ -211,7 +201,18 @@ const Products = () => {
         key={snackbarState.transition.name}
       >
         <Alert severity="error">{snackbarState.message}</Alert>
-      </Snackbar>
+      </Snackbar> */}
+      <CustomSnackbar
+        open={snackbarState.open}
+        type={snackbarState.type}
+        message={snackbarState.message}
+        onClose={() =>
+          setSnackbarState({
+            ...snackbarState,
+            open: false
+          })
+        }
+      />
     </Box>
   );
 };

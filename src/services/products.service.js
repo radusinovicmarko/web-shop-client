@@ -27,6 +27,8 @@ export const deleteProduct = (id) => securedInstance.delete(`/products/${id}`);
 
 export const addProduct = (product) => securedInstance.post("/products", product);
 
+export const buyProduct = (id, purchase) => securedInstance.post(`/products/${id}/purchase`, purchase);
+
 export default {
   getAll,
   getByCategory,
@@ -34,5 +36,6 @@ export default {
   get,
   addComment,
   deleteProduct,
-  addProduct
+  addProduct,
+  buyProduct
 };

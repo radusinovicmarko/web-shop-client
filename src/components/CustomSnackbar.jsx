@@ -1,5 +1,5 @@
 import { Alert, Slide, Snackbar } from "@mui/material";
-import React, { useState } from "react";
+import React from "react";
 import PropTypes from "prop-types";
 
 const Transition = (props) => {
@@ -7,16 +7,12 @@ const Transition = (props) => {
 };
 
 const CustomSnackbar = (props) => {
-  const { open, message } = props;
-  const [snackbarState, setSnackbarState] = useState({
-    open,
+  const { open, message, onClose, type } = props;
+  const snackbarState = {
     vertical: "bottom",
     horizontal: "right",
-    message,
     transition: Transition
-  });
-
-  const handleClose = () => setSnackbarState({ ...snackbarState, open: false });
+  };
 
   return (
     <Snackbar
@@ -24,21 +20,23 @@ const CustomSnackbar = (props) => {
         vertical: snackbarState.vertical,
         horizontal: snackbarState.horizontal
       }}
-      open={snackbarState.open}
+      open={open}
       autoHideDuration={3000}
-      onClose={handleClose}
+      onClose={onClose}
       TransitionComponent={snackbarState.transition}
-      message={snackbarState.message}
+      message={message}
       key={snackbarState.transition.name}
     >
-      <Alert severity="error">{snackbarState.message}</Alert>
+      <Alert severity={type}>{message}</Alert>
     </Snackbar>
   );
 };
 
 CustomSnackbar.propTypes = {
   open: PropTypes.bool,
-  message: PropTypes.string
+  message: PropTypes.string,
+  onClose: PropTypes.func,
+  type: PropTypes.string
 };
 
 export default CustomSnackbar;

@@ -6,7 +6,7 @@ import StepLabel from "@mui/material/StepLabel";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import { Container, Stack } from "@mui/system";
-import { Grid, TextField } from "@mui/material";
+import { Checkbox, FormControlLabel, Grid, TextField } from "@mui/material";
 import CategoriesTreeView from "../components/CategoriesTreeView";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import storage from "../environments/firebase.config";
@@ -24,7 +24,8 @@ const NewProduct = () => {
     title: "",
     description: "",
     price: 0,
-    location: ""
+    location: "",
+    newProduct: true
   });
   const [categories, setCategories] = useState([]);
   const [categoriesSelected, setCategoriesSelected] = useState([]);
@@ -265,6 +266,17 @@ const NewProduct = () => {
                           location: event.target.value
                         })
                       }
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          checked={product.newProduct}
+                          onChange={(event) => setProduct({ ...product, newProduct: event.target.checked })}
+                        />
+                      }
+                      label="Nov proizvod?"
                     />
                   </Grid>
                   <Grid item xs={12} sm={12}>

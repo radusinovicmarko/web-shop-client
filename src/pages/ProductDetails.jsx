@@ -22,12 +22,13 @@ import moment from "moment/moment";
 import React, { useEffect, useState } from "react";
 import Carousel from "react-material-ui-carousel";
 import { useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import NewCommentModal from "../components/NewCommentModal";
 import productsService from "../services/products.service";
 
 const ProductDetails = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [tabvalue, setTabValue] = useState("1");
   const [product, setProduct] = useState(null);
   const [commentModalOpened, setCommentModalOpened] = useState(false);
@@ -261,6 +262,7 @@ const ProductDetails = () => {
                         variant="outlined"
                         color="inherit"
                         startIcon={<ShoppingCartOutlined />}
+                        onClick={() => navigate(`/proizvodi/${product?.id}/kupovina`)}
                       >
                         <Typography variant="body1">Kupovina</Typography>
                       </Button>
