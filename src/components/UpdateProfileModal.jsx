@@ -6,6 +6,7 @@ import {
   IconButton,
   InputAdornment,
   Modal,
+  Stack,
   TextField,
   Typography
 } from "@mui/material";
@@ -53,7 +54,9 @@ const UpdateProfileModal = (props) => {
         getDownloadURL(snapshot.ref)
           .then((url) => {
             setAvatarUrl(url);
-            passwordChange ? onApply({ ...userData, newPassword, avatarUrl }) : onApply({ ...userData, avatarUrl });
+            passwordChange
+              ? onApply({ ...userData, newPassword, avatarUrl: url })
+              : onApply({ ...userData, avatarUrl: url });
             onClose();
           })
           .catch((err) => console.log(err));
@@ -68,7 +71,9 @@ const UpdateProfileModal = (props) => {
       setUserData({ ...userData, avatarUrl });
       console.log(JSON.stringify(avatarUrl) + "A");
     } else {
-      passwordChange ? onApply({ ...userData, newPassword }) : onApply(userData);
+      passwordChange
+        ? onApply({ ...userData, newPassword })
+        : onApply(userData);
       onClose();
     }
   };
@@ -94,7 +99,6 @@ const UpdateProfileModal = (props) => {
           </Grid>
           <Grid item xs={12} sm={6}>
             <TextField
-              // autoComplete="given-name"
               name="firstName"
               required
               fullWidth
@@ -113,7 +117,7 @@ const UpdateProfileModal = (props) => {
               id="lastName"
               label="Prezime"
               name="lastName"
-              autoComplete="family-name"
+              autoComplete="username"
               value={userData?.lastName}
               onChange={(event) =>
                 setUserData({ ...userData, lastName: event.target.value })
@@ -121,15 +125,20 @@ const UpdateProfileModal = (props) => {
             />
           </Grid>
           <Grid item xs={12} sm={12}>
-            <Button variant="outlined" color="inherit" component="label">
-              Otpremite avatar
-              <input
-                hidden
-                accept="image/*"
-                type="file"
-                onChange={(event) => setAvatarFile(event.target.files[0])}
-              />
-            </Button>
+            <Stack direction="column" rowGap={1}>
+              <Button variant="outlined" color="inherit" component="label">
+                Otpremite avatar
+                <input
+                  hidden
+                  accept="image/*"
+                  type="file"
+                  onChange={(event) => setAvatarFile(event.target.files[0])}
+                />
+              </Button>
+              {avatarFile && (
+                <Typography>Otpremljeni avatar: {avatarFile.name}</Typography>
+              )}
+            </Stack>
           </Grid>
           <Grid item xs={12}>
             <TextField
@@ -165,6 +174,7 @@ const UpdateProfileModal = (props) => {
               id="location"
               label="Grad"
               name="location"
+              autoComplete="location"
               value={userData?.location}
               onChange={(event) =>
                 setUserData({ ...userData, location: event.target.value })
@@ -217,7 +227,7 @@ const UpdateProfileModal = (props) => {
               name="password"
               label="Lozinka"
               id="password"
-              autoComplete="password"
+              autoComplete="current-password"
               value={userData?.password}
               onChange={(event) =>
                 setUserData({ ...userData, password: event.target.value })

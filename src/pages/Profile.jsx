@@ -17,16 +17,19 @@ import {
   Typography
 } from "@mui/material";
 import { Box } from "@mui/system";
+import { unwrapResult } from "@reduxjs/toolkit";
 import React, { useState, useEffect } from "react";
 
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import ProductCard from "../components/ProductCard";
 import UpdateProfileModal from "../components/UpdateProfileModal";
+import { updateProfile } from "../redux/slices/userSlice";
 import productsService from "../services/products.service";
 import usersService from "../services/users.service";
 
 const Profile = () => {
   const { user } = useSelector((state) => state.user);
+  const dispatch = useDispatch();
   const [tabvalue, setTabValue] = useState("1");
   const [myProducts, setMyProducts] = useState({
     products: [],
@@ -74,8 +77,11 @@ const Profile = () => {
     setTabValue(newValue);
   };
 
-  const updateProfile = (userData) => {
-    usersService.updateProfile(user.id, userData).then((res) => console.log(res)).catch((err) => console.log(err));
+  const onUpdateProfile = (userData) => {
+    dispatch(updateProfile({ id: user.id, user: userData }))
+      .then(unwrapResult)
+      .then((_) => console.log("Success"))
+      .catch((_) => console.log("Err"));
   };
 
   const deleteProduct = (product) => {
@@ -104,7 +110,11 @@ const Profile = () => {
           <TabPanel value="1">
             <Grid container spacing={1}>
               <Grid item xs={12} sm={4} md={4} lg={3}>
-                <img style={{ height: "auto", maxWidth: "100%" }} alt="Avatar nije podešen." src={user.avatarUrl} />
+                <img
+                  style={{ height: "auto", maxWidth: "100%" }}
+                  alt="Avatar nije podešen."
+                  src={user.avatarUrl}
+                />
               </Grid>
               <Grid container item xs={12} sm={12} md={8} lg={9}>
                 <Grid item xs={12} sm={6} md={6} lg={4}>
@@ -240,7 +250,12 @@ const Profile = () => {
                 </Button>
               </Grid>
             </Grid>
-            <UpdateProfileModal open={updateModalOpened} onApply={updateProfile} onClose={() => setUpdateModalOpened(false)} user={user} />
+            <UpdateProfileModal
+              open={updateModalOpened}
+              onApply={onUpdateProfile}
+              onClose={() => setUpdateModalOpened(false)}
+              user={user}
+            />
           </TabPanel>
           <TabPanel value="2">
             <Stack spacing={2}>

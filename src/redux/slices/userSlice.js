@@ -1,18 +1,27 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import authService from "../../services/auth.service";
+import usersService from "../../services/users.service";
 
-export const login = createAsyncThunk("user/login", ({ username, password }, thunkAPI) =>
-  authService.login(username, password)
+export const login = createAsyncThunk(
+  "user/login",
+  ({ username, password }, thunkAPI) => authService.login(username, password)
 );
 
 export const state = createAsyncThunk("user/state", () => authService.state());
 
-export const activate = createAsyncThunk("user/activate", ({ username, pin }, thunkAPI) =>
-  authService.activate(username, pin)
+export const activate = createAsyncThunk(
+  "user/activate",
+  ({ username, pin }, thunkAPI) => authService.activate(username, pin)
 );
 
 export const register = createAsyncThunk("user/register", (user, thunkAPI) =>
   authService.register(user)
+);
+
+export const updateProfile = createAsyncThunk(
+  "user/update",
+  ({ id, user }, { rejectWithValue }) =>
+    usersService.updateProfile(id, user).catch(rejectWithValue)
 );
 
 const logoutAction = (state, action) => {
@@ -76,6 +85,9 @@ const userSlice = createSlice({
       state.loading = false;
       state.pendingActivation = true;
       state.user = { username: action.payload.username };
+    },
+    [updateProfile.fulfilled]: (state, action) => {
+      state.user = action.payload.data;
     }
   }
 });

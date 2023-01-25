@@ -95,6 +95,7 @@ const Register = () => {
                 id="email"
                 label="Email adresa"
                 name="email"
+                type="email"
               />
             </Grid>
             <Grid item xs={12}>
@@ -128,6 +129,7 @@ const Register = () => {
                 id="contactPhone"
                 label="Telefon"
                 name="contactPhone"
+                type="tel"
               />
             </Grid>
             <Grid item xs={12} sm={6}>

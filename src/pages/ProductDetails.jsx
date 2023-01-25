@@ -189,7 +189,7 @@ const ProductDetails = () => {
                           variant="body1"
                           sx={{ m: 1, ml: 2, overflowWrap: "break-word" }}
                         >
-                          {moment(product?.publishDate).format("DD. MM. yyyy.")}
+                          {moment(product?.publishDate).format("DD. MM. yyyy. HH:mm")}
                         </Typography>
                       </Stack>
                     </Paper>
@@ -243,7 +243,7 @@ const ProductDetails = () => {
                             sx={{ m: 1, ml: 2, overflowWrap: "break-word" }}
                           >
                             {moment(product?.purchaseDate).format(
-                              "DD. MM. yyyy."
+                              "DD. MM. yyyy. HH:mm:ss"
                             )}
                           </Typography>
                         </Stack>

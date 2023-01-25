@@ -7,12 +7,9 @@ import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
 import FilterAltOutlinedIcon from "@mui/icons-material/FilterAltOutlined";
 import PropTypes from "prop-types";
-import TreeView from "@mui/lab/TreeView";
-import TreeItem from "@mui/lab/TreeItem";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import categoryService from "../services/category.service";
 import { Button, Divider, Typography } from "@mui/material";
+import CategoriesTreeView from "./CategoriesTreeView";
 
 const CategoryFilter = (props) => {
   const { onApply } = props;
@@ -42,35 +39,6 @@ const CategoryFilter = (props) => {
       .then((res) => setCategories(res.data))
       .catch(() => console.log("err"));
   }, []);
-
-  const getTreeItemsFromData = (treeItems) => {
-    return treeItems.map((treeItemData) => {
-      let children;
-      if (treeItemData.subcategories && treeItemData.subcategories.length > 0) {
-        children = getTreeItemsFromData(treeItemData.subcategories);
-      }
-      if (treeItemData.route) {
-        return (
-          <TreeItem
-            key={treeItemData.id}
-            nodeId={`${treeItemData.id}`}
-            label={treeItemData.name}
-            children={children}
-            onClick={() => setCategoryId(treeItemData.id)}
-          />
-        );
-      }
-      return (
-        <TreeItem
-          key={treeItemData.id}
-          nodeId={`${treeItemData.id}`}
-          label={treeItemData.name}
-          children={children}
-          onClick={() => setCategoryId(treeItemData.id)}
-        />
-      );
-    });
-  };
 
   return (
     <React.Fragment>
@@ -127,13 +95,7 @@ const CategoryFilter = (props) => {
           </Typography>
         </MenuItem>
         <MenuItem>
-          <TreeView
-            defaultCollapseIcon={<ExpandMoreIcon />}
-            defaultExpandIcon={<ChevronRightIcon />}
-            // sx={{ height: 240, flexGrow: 1, maxWidth: 400, overflowY: "auto" }}
-          >
-            {getTreeItemsFromData(categories)}
-          </TreeView>
+          <CategoriesTreeView onItemClick={(category) => setCategoryId(category.id)} categories={categories} />
         </MenuItem>
         <Divider />
         <MenuItem onClick={apply}>

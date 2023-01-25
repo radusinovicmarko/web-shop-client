@@ -9,11 +9,9 @@ import {
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
-import { TreeItem, TreeView } from "@mui/lab";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import categoryService from "../services/category.service";
 import { Stack } from "@mui/system";
+import CategoriesTreeView from "./CategoriesTreeView";
 
 const style = {
   position: "absolute",
@@ -72,43 +70,11 @@ const AttributeSearchModal = (props) => {
     }
   };
 
-  const getTreeItemsFromData = (treeItems) => {
-    return treeItems.map((treeItemData) => {
-      let children;
-      if (treeItemData.subcategories && treeItemData.subcategories.length > 0) {
-        children = getTreeItemsFromData(treeItemData.subcategories);
-      }
-      if (treeItemData.route) {
-        return (
-          <TreeItem
-            key={treeItemData.id}
-            nodeId={`${treeItemData.id}`}
-            label={treeItemData.name}
-            children={children}
-            onClick={() => {
-              setSelectedAttributeId({ id: "" });
-              setSelectedAttribute(null);
-              setCategoryId(treeItemData.id);
-              setSelectedCategory(treeItemData);
-            }}
-          />
-        );
-      }
-      return (
-        <TreeItem
-          key={treeItemData.id}
-          nodeId={`${treeItemData.id}`}
-          label={treeItemData.name}
-          children={children}
-          onClick={() => {
-            setSelectedAttributeId({ id: "" });
-            setSelectedAttribute(null);
-            setCategoryId(treeItemData.id);
-            setSelectedCategory(treeItemData);
-          }}
-        />
-      );
-    });
+  const onTreeItemClick = (category) => {
+    setSelectedAttributeId({ id: "" });
+    setSelectedAttribute(null);
+    setCategoryId(category.id);
+    setSelectedCategory(category);
   };
 
   return (
@@ -123,12 +89,7 @@ const AttributeSearchModal = (props) => {
           Izaberite kategoriju
         </Typography>
         <br />
-        <TreeView
-          defaultCollapseIcon={<ExpandMoreIcon />}
-          defaultExpandIcon={<ChevronRightIcon />}
-        >
-          {getTreeItemsFromData(categories)}
-        </TreeView>
+        <CategoriesTreeView onItemClick={onTreeItemClick} categories={categories} />
         <br />
         <br />
         <TextField

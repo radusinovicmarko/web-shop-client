@@ -13,6 +13,8 @@ import ProductDetails from "./pages/ProductDetails";
 import { CssBaseline } from "@mui/material";
 import { state } from "./redux/slices/userSlice";
 import Profile from "./pages/Profile";
+import NewProduct from "./pages/NewProduct";
+import UserSupport from "./pages/UserSupport";
 
 function App () {
   const darkTheme = createTheme({
@@ -48,6 +50,8 @@ function App () {
           <Route exact path="/proizvodi" element={<Products />} />
           <Route exact path="/proizvodi/:id" element={<ProductDetails />} />
           <Route exact path="/profil" element={authenticated ? <Profile /> : <Navigate to={"/prijava"} />} />
+          <Route exact path="/novi-proizvod" element={authenticated ? <NewProduct /> : <Navigate to={"/prijava"} />} />
+          <Route exact path="/korisnicka-podrska" element={authenticated ? <UserSupport /> : <Navigate to={"/prijava"} />} />
           <Route exact path="/registracija" element={ authenticated ? <Navigate to={"/"} /> : (pendingActivation ? <Navigate to={"/aktivacija"} /> : <Register />)} />
           <Route exact path="/prijava" element={authenticated ? <Navigate to={"/"} /> : (pendingActivation ? <Navigate to={"/aktivacija"} /> : <Login />)} />
           <Route exact path="/aktivacija" element={pendingActivation ? <Activation /> : <Navigate to={"/"} />} />
