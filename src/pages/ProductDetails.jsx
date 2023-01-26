@@ -20,9 +20,9 @@ import {
 import { Box } from "@mui/system";
 import moment from "moment/moment";
 import React, { useEffect, useState } from "react";
-import Carousel from "react-material-ui-carousel";
 import { useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
+import ImageSwiper from "../components/ImageSwiper";
 import NewCommentModal from "../components/NewCommentModal";
 import productsService from "../services/products.service";
 
@@ -81,26 +81,12 @@ const ProductDetails = () => {
                   {product?.title}
                 </Typography>
               </Grid>
-              <Grid item xs={12} sm={6} md={5} lg={4}>
+              <Grid item xs={12} sm={12} md={5} lg={4}>
                 <Box>
-                  <Carousel
-                    animation="fade"
-                    indicators={false}
-                    swipe={true}
-                    interval={10000}
-                    height="30vh"
-                  >
-                    {product?.pictures.map((p) => (
-                      <img
-                        key={p.id}
-                        src={p.pictureUrl}
-                        style={{ width: "100%", height: "auto" }}
-                      />
-                    ))}
-                  </Carousel>
+                  <ImageSwiper pictures={product ? product.pictures : []} />
                 </Box>
               </Grid>
-              <Grid container item xs={12} sm={6} md={7} lg={8}>
+              <Grid container item xs={12} sm={12} md={7} lg={8}>
                 <Grid item xs={12} sm={6} md={4} lg={3}>
                   <Box sx={{ height: "100%", m: 1 }}>
                     <Paper elevation={10}>

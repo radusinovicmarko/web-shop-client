@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "./App.css";
+import "swiper/css/bundle";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { Route, BrowserRouter as Router, Routes, Navigate } from "react-router-dom";
 import Header from "./components/Header";
