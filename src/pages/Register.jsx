@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -8,11 +8,13 @@ import Box from "@mui/material/Box";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
-import { IconButton, InputAdornment } from "@mui/material";
+import { IconButton, InputAdornment, Stack } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { Link } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { register } from "../redux/slices/userSlice";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import storage from "../environments/firebase.config";
 
 const Register = () => {
   const dispatch = useDispatch();
@@ -20,25 +22,38 @@ const Register = () => {
   const [showPassword, setShowPassword] = useState(false);
   const handleClickShowPassword = () => setShowPassword(!showPassword);
   const handleMouseDownPassword = () => setShowPassword(!showPassword);
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState({
+    firstName: "",
+    lastName: "",
+    username: "",
+    email: "",
+    password: "",
+    contactPhone: "",
+    location: ""
+  });
+  const [avatarFile, setAvatarFile] = useState(null);
+
+  const uploadAvatar = () => {
+    const imageRef = ref(storage, `newUsers/${avatarFile.name}`);
+    uploadBytes(imageRef, avatarFile)
+      .then((snapshot) => {
+        getDownloadURL(snapshot.ref)
+          .then((url) => {
+            dispatch(register({ ...user, avatarUrl: url }));
+          })
+          .catch((err) => console.log(err));
+      })
+      .catch((err) => console.log(err));
+  };
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    setUser({
-      firstName: data.get("firstName"),
-      lastName: data.get("lastName"),
-      username: data.get("username"),
-      email: data.get("email"),
-      password: data.get("password"),
-      contactPhone: data.get("contactPhone"),
-      location: data.get("location")
-    });
+    if (avatarFile) {
+      uploadAvatar();
+    } else {
+      dispatch(register(user));
+    }
   };
-
-  useEffect(() => {
-    if (user) dispatch(register(user));
-  }, [user]);
 
   return (
     <Container component="main" maxWidth="xs">
@@ -61,12 +76,14 @@ const Register = () => {
           <Grid container spacing={2}>
             <Grid item xs={12} sm={6}>
               <TextField
-                // autoComplete="given-name"
+                autoComplete="given-name"
                 name="firstName"
                 required
                 fullWidth
                 id="firstName"
                 label="Ime"
+                value={user.firstName}
+                onChange={(event) => setUser({ ...user, firstName: event.target.value })}
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -77,6 +94,8 @@ const Register = () => {
                 label="Prezime"
                 name="lastName"
                 autoComplete="family-name"
+                value={user.lastName}
+                onChange={(event) => setUser({ ...user, lastName: event.target.value })}
               />
             </Grid>
             <Grid item xs={12}>
@@ -86,6 +105,8 @@ const Register = () => {
                 id="username"
                 label="Korisničko ime"
                 name="username"
+                value={user.username}
+                onChange={(event) => setUser({ ...user, username: event.target.value })}
               />
             </Grid>
             <Grid item xs={12}>
@@ -96,6 +117,8 @@ const Register = () => {
                 label="Email adresa"
                 name="email"
                 type="email"
+                value={user.email}
+                onChange={(event) => setUser({ ...user, email: event.target.value })}
               />
             </Grid>
             <Grid item xs={12}>
@@ -107,6 +130,8 @@ const Register = () => {
                 label="Lozinka"
                 id="password"
                 autoComplete="new-password"
+                value={user.password}
+                onChange={(event) => setUser({ ...user, password: event.target.value })}
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="end">
@@ -130,6 +155,8 @@ const Register = () => {
                 label="Telefon"
                 name="contactPhone"
                 type="tel"
+                value={user.contactPhone}
+                onChange={(event) => setUser({ ...user, contactPhone: event.target.value })}
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -139,8 +166,26 @@ const Register = () => {
                 id="location"
                 label="Grad"
                 name="location"
+                value={user.location}
+                onChange={(event) => setUser({ ...user, location: event.target.value })}
               />
             </Grid>
+            <Grid item xs={12} sm={12}>
+            <Stack direction="column" rowGap={1}>
+              <Button variant="outlined" color="inherit" component="label">
+                Otpremite avatar
+                <input
+                  hidden
+                  accept="image/*"
+                  type="file"
+                  onChange={(event) => setAvatarFile(event.target.files[0])}
+                />
+              </Button>
+              {avatarFile && (
+                <Typography>Otpremljeni avatar: {avatarFile.name}</Typography>
+              )}
+            </Stack>
+          </Grid>
           </Grid>
           <Button
             type="submit"

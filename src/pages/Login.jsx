@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -25,20 +25,9 @@ const Login = () => {
     password: ""
   });
 
-  useEffect(() => {
-    const { username } = credentials;
-    if (!username) return;
-    dispatch(login(credentials));
-  }, [credentials]);
-
   const handleSubmit = (event) => {
     event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    const userCredentials = {
-      username: data.get("username"),
-      password: data.get("password")
-    };
-    setCredentials(userCredentials);
+    dispatch(login(credentials));
   };
 
   return (
@@ -58,7 +47,7 @@ const Login = () => {
         <Typography component="h1" variant="h5">
           Prijava
         </Typography>
-        <Box component="form" method="post" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+        <Box component="form" method="post" onSubmit={handleSubmit} sx={{ mt: 1 }}>
           <TextField
             margin="normal"
             required
@@ -66,6 +55,9 @@ const Login = () => {
             id="username"
             label="Korisničko ime"
             name="username"
+            autoComplete="username"
+            value={credentials.username}
+            onChange={(event) => setCredentials({ ...credentials, username: event.target.value })}
           />
           <TextField
             required
@@ -74,7 +66,9 @@ const Login = () => {
             name="password"
             label="Lozinka"
             id="password"
-            autoComplete="new-password"
+            autoComplete="off"
+            value={credentials.password}
+            onChange={(event) => setCredentials({ ...credentials, password: event.target.value })}
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
