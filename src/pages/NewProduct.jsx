@@ -6,7 +6,7 @@ import StepLabel from "@mui/material/StepLabel";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import { Container, Stack } from "@mui/system";
-import { Checkbox, FormControlLabel, Grid, TextField } from "@mui/material";
+import { Checkbox, FormControlLabel, Grid, TextField, useMediaQuery } from "@mui/material";
 import CategoriesTreeView from "../components/CategoriesTreeView";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import storage from "../environments/firebase.config";
@@ -20,6 +20,7 @@ const steps = ["Izaberite kategoriju", "Osnovni podaci", "Dodatni podaci"];
 const NewProduct = () => {
   const [activeStep, setActiveStep] = React.useState(0);
   const { user } = useSelector((state) => state.user);
+  const isXs = useMediaQuery("(max-width:599px)");
   const [product, setProduct] = useState({
     title: "",
     description: "",
@@ -126,7 +127,7 @@ const NewProduct = () => {
         <Typography sx={{ textAlign: "center", mb: 5 }} variant="h5">
           Kreiranje proizvoda
         </Typography>
-        <Stepper activeStep={activeStep}>
+        <Stepper orientation={isXs ? "vertical" : "horizontal"} activeStep={activeStep}>
           {steps.map((label, index) => {
             const stepProps = {};
             const labelProps = {};
@@ -163,6 +164,7 @@ const NewProduct = () => {
                       <CategoriesTreeView
                         categories={categories}
                         onItemClick={onTreeItemClick}
+                        multiple={true}
                       />
                     </Stack>
                   </Grid>

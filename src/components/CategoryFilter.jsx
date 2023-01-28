@@ -10,12 +10,14 @@ import PropTypes from "prop-types";
 import categoryService from "../services/category.service";
 import { Button, Divider, Typography } from "@mui/material";
 import CategoriesTreeView from "./CategoriesTreeView";
+import { Stack } from "@mui/system";
 
 const CategoryFilter = (props) => {
   const { onApply } = props;
   const [anchorEl, setAnchorEl] = useState(null);
   const [categories, setCategories] = useState([]);
   const [categoryId, setCategoryId] = useState(0);
+  const [categoryName, setCategoryName] = useState("");
 
   const open = Boolean(anchorEl);
 
@@ -95,7 +97,17 @@ const CategoryFilter = (props) => {
           </Typography>
         </MenuItem>
         <MenuItem>
-          <CategoriesTreeView onItemClick={(category) => setCategoryId(category.id)} categories={categories} />
+          <CategoriesTreeView onItemClick={(category) => {
+            setCategoryId(category.id);
+            setCategoryName(category.name);
+          }} categories={categories} multiple={false} />
+        </MenuItem>
+        <Divider />
+        <MenuItem>
+        <Stack rowGap={1} >
+          <Typography variant="body1">Izabrana kategorija:</Typography>
+          <Typography variant="body1">{categoryName}</Typography>
+          </Stack>
         </MenuItem>
         <Divider />
         <MenuItem onClick={apply}>

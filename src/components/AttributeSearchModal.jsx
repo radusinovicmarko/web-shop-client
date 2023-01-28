@@ -41,6 +41,7 @@ const AttributeSearchModal = (props) => {
   const [value, setValue] = useState("");
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
+  const [filters, setFilters] = useState([]);
 
   useEffect(() => {
     categoryService
@@ -63,10 +64,48 @@ const AttributeSearchModal = (props) => {
     }
   }, [selectedAttributeId]);
 
+  const reset = () => {
+    setCategoryId("");
+    setSelectedCategory(null);
+    setAttributes([]);
+    setSelectedAttributeId({ id: "" });
+    setSelectedAttribute(null);
+    setValue("");
+    setFrom("");
+    setTo("");
+  };
+
   const apply = () => {
     if (selectedAttributeId.id !== "") {
-      onApply(selectedAttributeId.id, value, from, to);
-      onClose();
+      onApply([
+        ...filters,
+        {
+          attribute: selectedAttribute,
+          value,
+          to,
+          from
+        }
+      ]);
+    } else {
+      if (filters.length === 0) return;
+      onApply(filters);
+    }
+    onClose();
+    reset();
+  };
+
+  const addFilter = () => {
+    if (selectedAttributeId.id !== "") {
+      setFilters([
+        ...filters,
+        {
+          attribute: selectedAttribute,
+          value,
+          to,
+          from
+        }
+      ]);
+      reset();
     }
   };
 
@@ -89,8 +128,13 @@ const AttributeSearchModal = (props) => {
           Izaberite kategoriju
         </Typography>
         <br />
-        <CategoriesTreeView onItemClick={onTreeItemClick} categories={categories} />
+        <CategoriesTreeView
+          onItemClick={onTreeItemClick}
+          categories={categories}
+          multiple={false}
+        />
         <br />
+        <Typography>Izabrana kategorija: {selectedCategory?.name}</Typography>
         <br />
         <TextField
           value={selectedAttributeId.id}
@@ -154,9 +198,20 @@ const AttributeSearchModal = (props) => {
               />
             </Stack>
           )}
-          <Button onClick={apply} color="inherit">
-            Pretraga
-          </Button>
+          <Stack direction="column" rowGap={1}>
+            <Typography>Izabrani filteri:</Typography>
+            {filters.map((filter) => (
+              <Typography key={filter.attribute.id}>{filter.attribute.name} {filter.value !== "" ? filter.value : `${filter.from} - ${filter.to}`}</Typography>
+            ))}
+          </Stack>
+          <Stack sx={{ alignItems: "center" }} direction="row" columnGap={1}>
+            <Button onClick={addFilter} color="inherit">
+              Dodatni filter
+            </Button>
+            <Button onClick={apply} color="inherit">
+              Pretraga
+            </Button>
+          </Stack>
         </Stack>
       </Box>
     </Modal>

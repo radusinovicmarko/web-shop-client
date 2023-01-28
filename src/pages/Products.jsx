@@ -31,15 +31,10 @@ const Products = () => {
     type: "error"
   });
   const [openModal, setOpenModal] = useState(false);
-  const [attributeSearchData, setAttributeSearchData] = useState({
-    attributeId: null,
-    value: null,
-    from: null,
-    to: null
-  });
+  const [attributeSearchData, setAttributeSearchData] = useState(null);
   const [title, setTitle] = useState("");
 
-  const pageSize = 1;
+  const pageSize = 3;
 
   const onSuccessfulResponse = (data) => {
     setTotal({
@@ -61,13 +56,11 @@ const Products = () => {
             type: "error"
           })
         );
-    } else if (attributeSearchData.attributeId !== null) {
+    } else if (attributeSearchData !== null) {
+      console.log(JSON.stringify(attributeSearchData));
       productsService
-        .getByAttribute(
-          attributeSearchData.attributeId,
-          attributeSearchData.value,
-          attributeSearchData.from,
-          attributeSearchData.to,
+        .getByAttributes(
+          encodeURI(JSON.stringify(attributeSearchData)),
           page.page,
           pageSize
         )
@@ -112,13 +105,15 @@ const Products = () => {
     setPage({ page: 0 });
   };
 
-  const attributeSearch = (attributeId, value, from, to) => {
-    setAttributeSearchData({
-      attributeId,
-      value,
-      from,
-      to
-    });
+  const attributeSearch = (filters) => {
+    setAttributeSearchData(filters.map((f) => {
+      return {
+        id: f.attribute.id,
+        value: f.value,
+        from: f.from,
+        to: f.to
+      };
+    }));
     setCategoryId(null);
     setPage({ page: 0 });
   };
