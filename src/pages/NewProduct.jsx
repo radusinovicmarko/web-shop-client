@@ -94,13 +94,18 @@ const NewProduct = () => {
     uploadPictures(productData);
   };
 
+  const handleChildren = (categoriesTemp, category) => {
+    for (const subcategory of categoriesTemp) categoriesTemp = handleChildren(categoriesTemp, subcategory);
+    return categoriesTemp.filter((c) => c.id !== category.id);
+  };
+
   const onTreeItemClick = (category) => {
     setCategoryId(category.id);
     let categoriesTemp = [];
     if (!categoriesSelected.includes(category)) {
       categoriesTemp = [...categoriesSelected, category];
     } else {
-      categoriesTemp = categoriesSelected.filter((c) => c.id !== category.id);
+      categoriesTemp = handleChildren(categoriesTemp, category);
     }
     setCategoriesSelected(categoriesTemp);
     let attrs = [];
