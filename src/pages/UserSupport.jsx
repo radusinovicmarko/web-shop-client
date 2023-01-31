@@ -43,6 +43,8 @@ const UserSupport = () => {
         }, 1500);
       }
     });
+    setTitle("");
+    setContent("");
   };
 
   return (
