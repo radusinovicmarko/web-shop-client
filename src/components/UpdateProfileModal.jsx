@@ -269,18 +269,18 @@ const UpdateProfileModal = (props) => {
         >
           Promijenite
         </Button>
+        <CustomSnackbar
+          open={snackbarState.open}
+          type={snackbarState.type}
+          message={snackbarState.message}
+          onClose={() =>
+            setSnackbarState({
+              ...snackbarState,
+              open: false
+            })
+          }
+        />
       </Box>
-      <CustomSnackbar
-        open={snackbarState.open}
-        type={snackbarState.type}
-        message={snackbarState.message}
-        onClose={() =>
-          setSnackbarState({
-            ...snackbarState,
-            open: false
-          })
-        }
-      />
     </Modal>
   );
 };
