@@ -14,10 +14,14 @@ import categoryService from "../services/category.service";
 import { useSelector } from "react-redux";
 import moment from "moment/moment";
 import productsService from "../services/products.service";
+import CustomSnackbar from "../components/CustomSnackbar";
+import { useNavigate } from "react-router-dom";
 
 const steps = ["Izaberite kategoriju", "Osnovni podaci", "Dodatni podaci"];
 
 const NewProduct = () => {
+  const navigate = useNavigate();
+
   const [activeStep, setActiveStep] = React.useState(0);
   const { user } = useSelector((state) => state.user);
   const isXs = useMediaQuery("(max-width:599px)");
@@ -34,12 +38,26 @@ const NewProduct = () => {
   const [attributes, setAttributes] = useState([]);
   const [attributeValues, setAttributeValues] = useState([]);
   const [pictureFiles, setPictureFiles] = useState([]);
+  const [snackbarState, setSnackbarState] = useState({
+    open: false,
+    message: "",
+    type: "error"
+  });
 
   useEffect(() => {
     categoryService
       .getAll()
       .then((res) => setCategories(res.data))
-      .catch((err) => console.log(err));
+      .catch(() => {
+        setSnackbarState({
+          open: true,
+          type: "error",
+          message: "Došlo je do greške."
+        });
+        setTimeout(() => {
+          navigate("/");
+        }, 1500);
+      });
   }, []);
 
   const uploadPictures = async (productData) => {
@@ -59,10 +77,18 @@ const NewProduct = () => {
             .then((url) => {
               pictureUrlsTemp.push(url);
             })
-            .catch((err) => console.log(err));
+            .catch(() => setSnackbarState({
+              open: true,
+              message: "Greška prilikom slanja slike.",
+              type: "error"
+            }));
           promises2.push(promise2);
         })
-        .catch((err) => console.log(err));
+        .catch(() => setSnackbarState({
+          open: true,
+          message: "Greška prilikom slanja slike.",
+          type: "error"
+        }));
       promises.push(promise);
     });
     Promise.all(promises)
@@ -75,8 +101,16 @@ const NewProduct = () => {
         });
         productsService
           .addProduct({ ...productData, pictures })
-          .then((res) => console.log(res))
-          .catch(() => console.log("err"));
+          .then((res) => setSnackbarState({
+            open: true,
+            message: "Uspješno dodano!",
+            type: "success"
+          }))
+          .catch(() => setSnackbarState({
+            open: true,
+            message: "Greška prilikom dodavanja.",
+            type: "error"
+          }));
       });
   };
 
@@ -386,6 +420,17 @@ const NewProduct = () => {
           )}
         </React.Fragment>
       </Box>
+      <CustomSnackbar
+        open={snackbarState.open}
+        type={snackbarState.type}
+        message={snackbarState.message}
+        onClose={() =>
+          setSnackbarState({
+            ...snackbarState,
+            open: false
+          })
+        }
+      />
     </Container>
   );
 };

@@ -11,6 +11,8 @@ import categoryService from "../services/category.service";
 import { Button, Divider, Typography } from "@mui/material";
 import CategoriesTreeView from "./CategoriesTreeView";
 import { Stack } from "@mui/system";
+import { useNavigate } from "react-router-dom";
+import CustomSnackbar from "./CustomSnackbar";
 
 const CategoryFilter = (props) => {
   const { onApply } = props;
@@ -18,6 +20,13 @@ const CategoryFilter = (props) => {
   const [categories, setCategories] = useState([]);
   const [categoryId, setCategoryId] = useState(0);
   const [categoryName, setCategoryName] = useState("");
+  const [snackbarState, setSnackbarState] = useState({
+    open: false,
+    message: "",
+    type: "error"
+  });
+
+  const navigate = useNavigate();
 
   const open = Boolean(anchorEl);
 
@@ -39,7 +48,16 @@ const CategoryFilter = (props) => {
     categoryService
       .getAll()
       .then((res) => setCategories(res.data))
-      .catch(() => console.log("err"));
+      .catch(() => {
+        setSnackbarState({
+          open: true,
+          type: "error",
+          message: "Došlo je do greške."
+        });
+        setTimeout(() => {
+          navigate("/");
+        }, 1500);
+      });
   }, []);
 
   return (
@@ -116,6 +134,17 @@ const CategoryFilter = (props) => {
           </Button>
         </MenuItem>
       </Menu>
+      <CustomSnackbar
+        open={snackbarState.open}
+        type={snackbarState.type}
+        message={snackbarState.message}
+        onClose={() =>
+          setSnackbarState({
+            ...snackbarState,
+            open: false
+          })
+        }
+      />
     </React.Fragment>
   );
 };

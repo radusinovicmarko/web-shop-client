@@ -9,16 +9,40 @@ import {
 import { Box } from "@mui/system";
 import { useSelector } from "react-redux";
 import messagesService from "../services/messages.service";
+import CustomSnackbar from "../components/CustomSnackbar";
+import { useNavigate } from "react-router-dom";
 
 const UserSupport = () => {
   const { user } = useSelector((state) => state.user);
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
+  const [snackbarState, setSnackbarState] = useState({
+    open: false,
+    message: "",
+    type: "error"
+  });
+
+  const navigate = useNavigate();
 
   const create = (event) => {
     event.preventDefault();
     const message = { title, content, userId: user.id };
-    messagesService.addMessage(message).then(() => console.log("Success")).catch((err) => console.log(err));
+    messagesService.addMessage(message).then(() => setSnackbarState({
+      open: true,
+      message: "Uspješno poslano!",
+      type: "success"
+    })).catch((err) => {
+      setSnackbarState({
+        open: true,
+        type: "error",
+        message: err.response.status === 403 ? "Vaša sesija je istekla. Prijavite se ponovo." : "Došlo je do greške."
+      });
+      if (err.response.status === 403) {
+        setTimeout(() => {
+          navigate("/odjava");
+        }, 1500);
+      }
+    });
   };
 
   return (
@@ -71,6 +95,17 @@ const UserSupport = () => {
           {"Pošaljite poruku"}
         </Button>
       </Box>
+      <CustomSnackbar
+        open={snackbarState.open}
+        type={snackbarState.type}
+        message={snackbarState.message}
+        onClose={() =>
+          setSnackbarState({
+            ...snackbarState,
+            open: false
+          })
+        }
+      />
     </Container>
   );
 };

@@ -12,6 +12,8 @@ import PropTypes from "prop-types";
 import categoryService from "../services/category.service";
 import { Stack } from "@mui/system";
 import CategoriesTreeView from "./CategoriesTreeView";
+import CustomSnackbar from "./CustomSnackbar";
+import { useNavigate } from "react-router-dom";
 
 const style = {
   position: "absolute",
@@ -42,12 +44,28 @@ const AttributeSearchModal = (props) => {
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
   const [filters, setFilters] = useState([]);
+  const [snackbarState, setSnackbarState] = useState({
+    open: false,
+    message: "",
+    type: "error"
+  });
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     categoryService
       .getAll()
       .then((res) => setCategories(res.data))
-      .catch(() => console.log("err"));
+      .catch(() => {
+        setSnackbarState({
+          open: true,
+          type: "error",
+          message: "Došlo je do greške."
+        });
+        setTimeout(() => {
+          navigate("/");
+        }, 1500);
+      });
   }, []);
 
   useEffect(() => {
@@ -214,6 +232,17 @@ const AttributeSearchModal = (props) => {
           </Stack>
         </Stack>
       </Box>
+      <CustomSnackbar
+        open={snackbarState.open}
+        type={snackbarState.type}
+        message={snackbarState.message}
+        onClose={() =>
+          setSnackbarState({
+            ...snackbarState,
+            open: false
+          })
+        }
+      />
     </Modal>
   );
 };

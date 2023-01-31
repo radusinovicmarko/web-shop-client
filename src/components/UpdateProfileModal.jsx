@@ -16,6 +16,7 @@ import PropTypes from "prop-types";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import storage from "../environments/firebase.config";
+import CustomSnackbar from "./CustomSnackbar";
 
 const style = {
   position: "absolute",
@@ -46,6 +47,11 @@ const UpdateProfileModal = (props) => {
   const [newPassword, setNewPassword] = useState("");
   const [avatarUrl, setAvatarUrl] = useState("");
   const [avatarFile, setAvatarFile] = useState(null);
+  const [snackbarState, setSnackbarState] = useState({
+    open: false,
+    message: "",
+    type: "error"
+  });
 
   const uploadAvatar = () => {
     const imageRef = ref(storage, `users/${user.id}/${avatarFile.name}`);
@@ -59,9 +65,17 @@ const UpdateProfileModal = (props) => {
               : onApply({ ...userData, avatarUrl: url });
             onClose();
           })
-          .catch((err) => console.log(err));
+          .catch(() => setSnackbarState({
+            open: true,
+            message: "Greška prilikom slanja slike.",
+            type: "error"
+          }));
       })
-      .catch((err) => console.log(err));
+      .catch(() => setSnackbarState({
+        open: true,
+        message: "Greška prilikom slanja slike.",
+        type: "error"
+      }));
   };
 
   const apply = (event) => {
@@ -69,7 +83,6 @@ const UpdateProfileModal = (props) => {
     if (avatarFile) {
       uploadAvatar();
       setUserData({ ...userData, avatarUrl });
-      console.log(JSON.stringify(avatarUrl) + "A");
     } else {
       passwordChange
         ? onApply({ ...userData, newPassword })
@@ -257,6 +270,17 @@ const UpdateProfileModal = (props) => {
           Promijenite
         </Button>
       </Box>
+      <CustomSnackbar
+        open={snackbarState.open}
+        type={snackbarState.type}
+        message={snackbarState.message}
+        onClose={() =>
+          setSnackbarState({
+            ...snackbarState,
+            open: false
+          })
+        }
+      />
     </Modal>
   );
 };

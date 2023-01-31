@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -9,29 +9,34 @@ import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { useDispatch, useSelector } from "react-redux";
 import { activate } from "../redux/slices/userSlice";
+import { unwrapResult } from "@reduxjs/toolkit";
+import CustomSnackbar from "../components/CustomSnackbar";
 
 const Activation = () => {
   const dispatch = useDispatch();
-  const [activationData, setActivationData] = useState({
-    username: "",
-    pin: ""
+  const [pin, setPin] = useState("");
+  const [snackbarState, setSnackbarState] = useState({
+    open: false,
+    message: "",
+    type: "error"
   });
 
   const { user } = useSelector((state) => state.user);
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    const data = new FormData(event.currentTarget);
     const activation = {
       username: user.username,
-      pin: data.get("pin")
+      pin
     };
-    setActivationData(activation);
+    dispatch(activate(activation))
+      .then(unwrapResult)
+      .catch(() => setSnackbarState({
+        open: true,
+        type: "error",
+        message: "Aktivacija neuspješna, provjerite pin."
+      }));
   };
-
-  useEffect(() => {
-    if (activationData.pin) dispatch(activate(activationData));
-  }, [activationData]);
 
   return (
     <Container component="main" maxWidth="xs">
@@ -58,6 +63,8 @@ const Activation = () => {
             id="pin"
             label="PIN"
             name="pin"
+            value={pin}
+            onChange={(event) => setPin(event.target.value)}
           />
           <Button
             type="submit"
@@ -69,6 +76,17 @@ const Activation = () => {
           </Button>
         </Box>
       </Box>
+      <CustomSnackbar
+        open={snackbarState.open}
+        type={snackbarState.type}
+        message={snackbarState.message}
+        onClose={() =>
+          setSnackbarState({
+            ...snackbarState,
+            open: false
+          })
+        }
+      />
     </Container>
   );
 };

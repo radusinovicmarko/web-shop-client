@@ -16,6 +16,7 @@ import { register } from "../redux/slices/userSlice";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import storage from "../environments/firebase.config";
 import CustomSnackbar from "../components/CustomSnackbar";
+import { unwrapResult } from "@reduxjs/toolkit";
 
 const Register = () => {
   const dispatch = useDispatch();
@@ -46,9 +47,21 @@ const Register = () => {
           .then((url) => {
             dispatch(register({ ...user, avatarUrl: url }));
           })
-          .catch((err) => console.log(err));
+          .catch(() =>
+            setSnackbarState({
+              open: true,
+              message: "Greška prilikom slanja slike.",
+              type: "error"
+            })
+          );
       })
-      .catch((err) => console.log(err));
+      .catch(() =>
+        setSnackbarState({
+          open: true,
+          message: "Greška prilikom slanja slike.",
+          type: "error"
+        })
+      );
   };
 
   const handleSubmit = (event) => {
@@ -56,11 +69,18 @@ const Register = () => {
     if (avatarFile) {
       uploadAvatar();
     } else {
-      dispatch(register(user)).unwrap().catch((err) => setSnackbarState({
-        open: true,
-        type: "error",
-        message: err.response.status === 409 ? "Korisničko ime je zauzeto." : "Došlo je do greške."
-      }));
+      dispatch(register(user))
+        .then(unwrapResult)
+        .catch((err) =>
+          setSnackbarState({
+            open: true,
+            type: "error",
+            message:
+              err.response.status === 409
+                ? "Korisničko ime je zauzeto."
+                : "Došlo je do greške."
+          })
+        );
     }
   };
 
@@ -81,7 +101,12 @@ const Register = () => {
         <Typography component="h1" variant="h5">
           Registracija
         </Typography>
-        <Box component="form" method="post" onSubmit={handleSubmit} sx={{ mt: 3 }}>
+        <Box
+          component="form"
+          method="post"
+          onSubmit={handleSubmit}
+          sx={{ mt: 3 }}
+        >
           <Grid container spacing={2}>
             <Grid item xs={12} sm={6}>
               <TextField
@@ -92,7 +117,9 @@ const Register = () => {
                 id="firstName"
                 label="Ime"
                 value={user.firstName}
-                onChange={(event) => setUser({ ...user, firstName: event.target.value })}
+                onChange={(event) =>
+                  setUser({ ...user, firstName: event.target.value })
+                }
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -104,7 +131,9 @@ const Register = () => {
                 name="lastName"
                 autoComplete="family-name"
                 value={user.lastName}
-                onChange={(event) => setUser({ ...user, lastName: event.target.value })}
+                onChange={(event) =>
+                  setUser({ ...user, lastName: event.target.value })
+                }
               />
             </Grid>
             <Grid item xs={12}>
@@ -115,7 +144,9 @@ const Register = () => {
                 label="Korisničko ime"
                 name="username"
                 value={user.username}
-                onChange={(event) => setUser({ ...user, username: event.target.value })}
+                onChange={(event) =>
+                  setUser({ ...user, username: event.target.value })
+                }
               />
             </Grid>
             <Grid item xs={12}>
@@ -127,7 +158,9 @@ const Register = () => {
                 name="email"
                 type="email"
                 value={user.email}
-                onChange={(event) => setUser({ ...user, email: event.target.value })}
+                onChange={(event) =>
+                  setUser({ ...user, email: event.target.value })
+                }
               />
             </Grid>
             <Grid item xs={12}>
@@ -140,7 +173,9 @@ const Register = () => {
                 id="password"
                 autoComplete="new-password"
                 value={user.password}
-                onChange={(event) => setUser({ ...user, password: event.target.value })}
+                onChange={(event) =>
+                  setUser({ ...user, password: event.target.value })
+                }
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="end">
@@ -165,7 +200,9 @@ const Register = () => {
                 name="contactPhone"
                 type="tel"
                 value={user.contactPhone}
-                onChange={(event) => setUser({ ...user, contactPhone: event.target.value })}
+                onChange={(event) =>
+                  setUser({ ...user, contactPhone: event.target.value })
+                }
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -176,25 +213,27 @@ const Register = () => {
                 label="Grad"
                 name="location"
                 value={user.location}
-                onChange={(event) => setUser({ ...user, location: event.target.value })}
+                onChange={(event) =>
+                  setUser({ ...user, location: event.target.value })
+                }
               />
             </Grid>
             <Grid item xs={12} sm={12}>
-            <Stack direction="column" rowGap={1}>
-              <Button variant="outlined" color="inherit" component="label">
-                Otpremite avatar
-                <input
-                  hidden
-                  accept="image/*"
-                  type="file"
-                  onChange={(event) => setAvatarFile(event.target.files[0])}
-                />
-              </Button>
-              {avatarFile && (
-                <Typography>Otpremljeni avatar: {avatarFile.name}</Typography>
-              )}
-            </Stack>
-          </Grid>
+              <Stack direction="column" rowGap={1}>
+                <Button variant="outlined" color="inherit" component="label">
+                  Otpremite avatar
+                  <input
+                    hidden
+                    accept="image/*"
+                    type="file"
+                    onChange={(event) => setAvatarFile(event.target.files[0])}
+                  />
+                </Button>
+                {avatarFile && (
+                  <Typography>Otpremljeni avatar: {avatarFile.name}</Typography>
+                )}
+              </Stack>
+            </Grid>
           </Grid>
           <Button
             type="submit"

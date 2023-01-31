@@ -7,10 +7,11 @@ import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import { Container } from "@mui/system";
 import { Grid, MenuItem, TextField } from "@mui/material";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import productsService from "../services/products.service";
 import { useSelector } from "react-redux";
 import moment from "moment/moment";
+import CustomSnackbar from "../components/CustomSnackbar";
 
 const steps = ["Izaberite način plaćanja", "Podaci o kartici"];
 
@@ -19,6 +20,13 @@ const Purchase = () => {
   const [activeStep, setActiveStep] = React.useState(0);
   const [paymentMethod, setPaymentMethod] = useState(0);
   const [cardNumber, setCardNumber] = useState("");
+  const [snackbarState, setSnackbarState] = useState({
+    open: false,
+    message: "",
+    type: "error"
+  });
+
+  const navigate = useNavigate();
   const { user } = useSelector((state) => state.user);
 
   const handlePrev = () =>
@@ -29,7 +37,30 @@ const Purchase = () => {
       purchaseDate: moment(),
       buyerId: user.id
     };
-    productsService.buyProduct(id, purchase);
+    productsService
+      .buyProduct(id, purchase)
+      .then(() =>
+        setSnackbarState({
+          open: true,
+          message: "Uspješna kupovina.",
+          type: "sucess"
+        })
+      )
+      .catch((err) => {
+        setSnackbarState({
+          open: true,
+          type: "error",
+          message:
+            err.response.status === 403
+              ? "Vaša sesija je istekla. Prijavite se ponovo."
+              : "Došlo je do greške."
+        });
+        if (err.response.status === 403) {
+          setTimeout(() => {
+            navigate("/odjava");
+          }, 1500);
+        }
+      });
   };
 
   return (
@@ -166,6 +197,17 @@ const Purchase = () => {
           </Box>
         )}
       </Box>
+      <CustomSnackbar
+        open={snackbarState.open}
+        type={snackbarState.type}
+        message={snackbarState.message}
+        onClose={() =>
+          setSnackbarState({
+            ...snackbarState,
+            open: false
+          })
+        }
+      />
     </Container>
   );
 };
