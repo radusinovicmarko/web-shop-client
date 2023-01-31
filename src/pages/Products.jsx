@@ -98,10 +98,7 @@ const Products = () => {
   const reset = () => {
     setTitle("");
     setCategoryId(null);
-    setAttributeSearchData({
-      ...attributeSearchData,
-      attributeId: null
-    });
+    setAttributeSearchData(null);
     setPage({ page: 0 });
   };
 
@@ -183,20 +180,6 @@ const Products = () => {
         onApply={attributeSearch}
         onClose={() => setOpenModal(false)}
       />
-      {/* <Snackbar
-        anchorOrigin={{
-          vertical: snackbarState.vertical,
-          horizontal: snackbarState.horizontal
-        }}
-        open={snackbarState.open}
-        autoHideDuration={3000}
-        onClose={handleClose}
-        TransitionComponent={snackbarState.transition}
-        message={snackbarState.message}
-        key={snackbarState.transition.name}
-      >
-        <Alert severity="error">{snackbarState.message}</Alert>
-      </Snackbar> */}
       <CustomSnackbar
         open={snackbarState.open}
         type={snackbarState.type}

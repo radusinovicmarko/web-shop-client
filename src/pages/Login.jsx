@@ -13,10 +13,11 @@ import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { Link } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { login } from "../redux/slices/userSlice";
+import CustomSnackbar from "../components/CustomSnackbar";
+import { unwrapResult } from "@reduxjs/toolkit";
 
 const Login = () => {
   const dispatch = useDispatch();
-
   const [showPassword, setShowPassword] = useState(false);
   const handleClickShowPassword = () => setShowPassword(!showPassword);
   const handleMouseDownPassword = () => setShowPassword(!showPassword);
@@ -24,10 +25,23 @@ const Login = () => {
     username: "",
     password: ""
   });
+  const [snackbarState, setSnackbarState] = useState({
+    open: false,
+    message: "",
+    type: "error"
+  });
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    dispatch(login(credentials));
+    dispatch(login(credentials))
+      .then(unwrapResult)
+      .catch(() =>
+        setSnackbarState({
+          open: true,
+          message: "Prijava neuspješna.",
+          type: "error"
+        })
+      );
   };
 
   return (
@@ -47,7 +61,12 @@ const Login = () => {
         <Typography component="h1" variant="h5">
           Prijava
         </Typography>
-        <Box component="form" method="post" onSubmit={handleSubmit} sx={{ mt: 1 }}>
+        <Box
+          component="form"
+          method="post"
+          onSubmit={handleSubmit}
+          sx={{ mt: 1 }}
+        >
           <TextField
             margin="normal"
             required
@@ -57,7 +76,9 @@ const Login = () => {
             name="username"
             autoComplete="username"
             value={credentials.username}
-            onChange={(event) => setCredentials({ ...credentials, username: event.target.value })}
+            onChange={(event) =>
+              setCredentials({ ...credentials, username: event.target.value })
+            }
           />
           <TextField
             required
@@ -68,7 +89,9 @@ const Login = () => {
             id="password"
             autoComplete="off"
             value={credentials.password}
-            onChange={(event) => setCredentials({ ...credentials, password: event.target.value })}
+            onChange={(event) =>
+              setCredentials({ ...credentials, password: event.target.value })
+            }
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
@@ -100,6 +123,17 @@ const Login = () => {
           </Grid>
         </Box>
       </Box>
+      <CustomSnackbar
+        open={snackbarState.open}
+        type={snackbarState.type}
+        message={snackbarState.message}
+        onClose={() =>
+          setSnackbarState({
+            ...snackbarState,
+            open: false
+          })
+        }
+      />
     </Container>
   );
 };

@@ -10,7 +10,7 @@ const CustomSnackbar = (props) => {
   const { open, message, onClose, type } = props;
   const snackbarState = {
     vertical: "bottom",
-    horizontal: "right",
+    horizontal: "center",
     transition: Transition
   };
 

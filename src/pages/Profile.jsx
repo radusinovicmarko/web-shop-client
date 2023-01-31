@@ -21,6 +21,8 @@ import { unwrapResult } from "@reduxjs/toolkit";
 import React, { useState, useEffect } from "react";
 
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import CustomSnackbar from "../components/CustomSnackbar";
 import ProductCard from "../components/ProductCard";
 import UpdateProfileModal from "../components/UpdateProfileModal";
 import { updateProfile } from "../redux/slices/userSlice";
@@ -30,6 +32,8 @@ import usersService from "../services/users.service";
 const Profile = () => {
   const { user } = useSelector((state) => state.user);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+
   const [tabvalue, setTabValue] = useState("1");
   const [myProducts, setMyProducts] = useState({
     products: [],
@@ -46,6 +50,24 @@ const Profile = () => {
   const [myProductsPage, setMyProductsPage] = useState({ page: 0 });
   const [purchasesPage, setMyPurchasesPage] = useState({ page: 0 });
   const [updateModalOpened, setUpdateModalOpened] = useState(false);
+  const [snackbarState, setSnackbarState] = useState({
+    open: false,
+    message: "",
+    type: "error"
+  });
+
+  const handleError = (err) => {
+    setSnackbarState({
+      open: true,
+      type: "error",
+      message: err.response.status === 403 ? "Vaša sesija je istekla. Prijavite se ponovo." : "Došlo je do greške."
+    });
+    if (err.response.status === 403) {
+      setTimeout(() => {
+        navigate("/odjava");
+      }, 1500);
+    }
+  };
 
   useEffect(() => {
     usersService
@@ -57,7 +79,16 @@ const Profile = () => {
           totalElements: res.data.totalElements,
           totalPages: res.data.totalPages
         })
-      );
+      )
+      .catch((err) => {
+        if (err.response.status !== 403) {
+          setSnackbarState({
+            open: true,
+            type: "error",
+            message: "Došlo je do greške."
+          });
+        }
+      });
   }, [myProductsPage]);
 
   useEffect(() => {
@@ -70,7 +101,8 @@ const Profile = () => {
           totalElements: res.data.totalElements,
           totalPages: res.data.totalPages
         })
-      );
+      )
+      .catch(handleError);
   }, [purchasesPage]);
 
   const handleChange = (event, newValue) => {
@@ -80,8 +112,12 @@ const Profile = () => {
   const onUpdateProfile = (userData) => {
     dispatch(updateProfile({ id: user.id, user: userData }))
       .then(unwrapResult)
-      .then((_) => console.log("Success"))
-      .catch((_) => console.log("Err"));
+      .then(() => setSnackbarState({
+        open: true,
+        type: "success",
+        message: "Uspješna promjena!"
+      }))
+      .catch(handleError);
   };
 
   const deleteProduct = (product) => {
@@ -90,7 +126,7 @@ const Profile = () => {
       .then((res) => {
         setMyProductsPage({ page: 0 });
       })
-      .catch((err) => console.log(err));
+      .catch(handleError);
   };
 
   return (
@@ -295,6 +331,28 @@ const Profile = () => {
           </TabPanel>
         </TabContext>
       </Box>
+      <CustomSnackbar
+        open={snackbarState.open}
+        type={snackbarState.type}
+        message={snackbarState.message}
+        onClose={() =>
+          setSnackbarState({
+            ...snackbarState,
+            open: false
+          })
+        }
+      />
+      <CustomSnackbar
+        open={snackbarState.open}
+        type={snackbarState.type}
+        message={snackbarState.message}
+        onClose={() =>
+          setSnackbarState({
+            ...snackbarState,
+            open: false
+          })
+        }
+      />
     </Paper>
   );
 };

@@ -15,10 +15,10 @@ import { useDispatch } from "react-redux";
 import { register } from "../redux/slices/userSlice";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import storage from "../environments/firebase.config";
+import CustomSnackbar from "../components/CustomSnackbar";
 
 const Register = () => {
   const dispatch = useDispatch();
-
   const [showPassword, setShowPassword] = useState(false);
   const handleClickShowPassword = () => setShowPassword(!showPassword);
   const handleMouseDownPassword = () => setShowPassword(!showPassword);
@@ -32,6 +32,11 @@ const Register = () => {
     location: ""
   });
   const [avatarFile, setAvatarFile] = useState(null);
+  const [snackbarState, setSnackbarState] = useState({
+    open: false,
+    message: "",
+    type: "error"
+  });
 
   const uploadAvatar = () => {
     const imageRef = ref(storage, `newUsers/${avatarFile.name}`);
@@ -51,7 +56,11 @@ const Register = () => {
     if (avatarFile) {
       uploadAvatar();
     } else {
-      dispatch(register(user));
+      dispatch(register(user)).unwrap().catch((err) => setSnackbarState({
+        open: true,
+        type: "error",
+        message: err.response.status === 409 ? "Korisničko ime je zauzeto." : "Došlo je do greške."
+      }));
     }
   };
 
@@ -204,6 +213,17 @@ const Register = () => {
           </Grid>
         </Box>
       </Box>
+      <CustomSnackbar
+        open={snackbarState.open}
+        type={snackbarState.type}
+        message={snackbarState.message}
+        onClose={() =>
+          setSnackbarState({
+            ...snackbarState,
+            open: false
+          })
+        }
+      />
     </Container>
   );
 };

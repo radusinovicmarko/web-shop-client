@@ -22,6 +22,7 @@ import moment from "moment/moment";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
+import CustomSnackbar from "../components/CustomSnackbar";
 import ImageSwiper from "../components/ImageSwiper";
 import NewCommentModal from "../components/NewCommentModal";
 import productsService from "../services/products.service";
@@ -32,6 +33,11 @@ const ProductDetails = () => {
   const [tabvalue, setTabValue] = useState("1");
   const [product, setProduct] = useState(null);
   const [commentModalOpened, setCommentModalOpened] = useState(false);
+  const [snackbarState, setSnackbarState] = useState({
+    open: false,
+    message: "",
+    type: "error"
+  });
 
   const { authenticated, user } = useSelector((state) => state.user);
 
@@ -39,7 +45,16 @@ const ProductDetails = () => {
     productsService
       .get(id)
       .then((res) => setProduct(res.data))
-      .catch((err) => console.log(err));
+      .catch(() => {
+        setSnackbarState({
+          open: true,
+          type: "error",
+          message: "Došlo je do greške."
+        });
+        setTimeout(() => {
+          navigate("/");
+        }, 1500);
+      });
   }, []);
 
   const handleChange = (event, newValue) => {
@@ -47,14 +62,35 @@ const ProductDetails = () => {
   };
 
   const addNewComment = (content) => {
-    productsService.addComment(product?.id, {
-      content,
-      dateTime: moment(),
-      userId: user.id,
-      productId: product?.id
-    }).then((res) => {
-      console.log("Uspjeh");
-    }).catch((err) => console.log(err));
+    productsService
+      .addComment(product?.id, {
+        content,
+        dateTime: moment(),
+        userId: user.id,
+        productId: product?.id
+      })
+      .then(() =>
+        setSnackbarState({
+          open: true,
+          type: "success",
+          message: "Dodavanje uspješno!"
+        })
+      )
+      .catch((err) => {
+        setSnackbarState({
+          open: true,
+          type: "error",
+          message:
+            err.response.status === 403
+              ? "Vaša sesija je istekla. Prijavite se ponovo."
+              : "Došlo je do greške."
+        });
+        if (err.response.status === 403) {
+          setTimeout(() => {
+            navigate("/odjava");
+          }, 1500);
+        }
+      });
   };
 
   return (
@@ -176,7 +212,9 @@ const ProductDetails = () => {
                           variant="body1"
                           sx={{ m: 1, ml: 2, overflowWrap: "break-word" }}
                         >
-                          {moment(product?.publishDate).format("DD. MM. yyyy. HH:mm")}
+                          {moment(product?.publishDate).format(
+                            "DD. MM. yyyy. HH:mm"
+                          )}
                         </Typography>
                       </Stack>
                     </Paper>
@@ -248,7 +286,9 @@ const ProductDetails = () => {
                         variant="outlined"
                         color="inherit"
                         startIcon={<ShoppingCartOutlined />}
-                        onClick={() => navigate(`/proizvodi/${product?.id}/kupovina`)}
+                        onClick={() =>
+                          navigate(`/proizvodi/${product?.id}/kupovina`)
+                        }
                       >
                         <Typography variant="body1">Kupovina</Typography>
                       </Button>
@@ -439,10 +479,25 @@ const ProductDetails = () => {
                 </Grid>
               ))}
             </Grid>
-            <NewCommentModal open={commentModalOpened} onApply={addNewComment} onClose={() => setCommentModalOpened(false)} />
+            <NewCommentModal
+              open={commentModalOpened}
+              onApply={addNewComment}
+              onClose={() => setCommentModalOpened(false)}
+            />
           </TabPanel>
         </TabContext>
       </Box>
+      <CustomSnackbar
+        open={snackbarState.open}
+        type={snackbarState.type}
+        message={snackbarState.message}
+        onClose={() =>
+          setSnackbarState({
+            ...snackbarState,
+            open: false
+          })
+        }
+      />
     </Paper>
   );
 };

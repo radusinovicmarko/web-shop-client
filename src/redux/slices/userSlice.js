@@ -4,18 +4,22 @@ import usersService from "../../services/users.service";
 
 export const login = createAsyncThunk(
   "user/login",
-  ({ username, password }, thunkAPI) => authService.login(username, password)
+  ({ username, password }, thunkAPI) =>
+    authService.login(username, password).catch(thunkAPI.rejectWithValue)
 );
 
-export const state = createAsyncThunk("user/state", () => authService.state());
+export const state = createAsyncThunk("user/state", (_, { rejectWithValue }) =>
+  authService.state()
+);
 
 export const activate = createAsyncThunk(
   "user/activate",
-  ({ username, pin }, thunkAPI) => authService.activate(username, pin)
+  ({ username, pin }, thunkAPI) =>
+    authService.activate(username, pin).catch(thunkAPI.rejectWithValue)
 );
 
 export const register = createAsyncThunk("user/register", (user, thunkAPI) =>
-  authService.register(user)
+  authService.register(user).catch(thunkAPI.rejectWithValue)
 );
 
 export const updateProfile = createAsyncThunk(
@@ -58,37 +62,37 @@ const userSlice = createSlice({
   reducers: {
     logout: logoutAction
   },
-  extraReducers: {
-    [login.pending]: (state, action) => {
+  extraReducers: (builder) => {
+    builder.addCase(login.fulfilled, onSuccessAuth);
+    builder.addCase(login.rejected, (state, action) => {
+      state.authenticated = false;
+      state.authenticationFailed = true;
+      state.loading = false;
+    });
+    builder.addCase(login.pending, (state, action) => {
       state.loading = true;
-    },
-    [login.rejected]: (state, action) => {
+    });
+    builder.addCase(state.fulfilled, onSuccessAuth);
+    builder.addCase(state.rejected, (state, action) => {
       state.authenticated = false;
       state.authenticationFailed = true;
       state.loading = false;
-    },
-    [login.fulfilled]: onSuccessAuth,
-    [state.fulfilled]: onSuccessAuth,
-    [state.rejected]: (state, action) => {
-      state.authenticated = false;
-      state.authenticationFailed = true;
-      state.loading = false;
-    },
-    [activate.fulfilled]: onSuccessAuth,
-    [activate.rejected]: (state, action) => {
+    });
+    builder.addCase(activate.fulfilled, onSuccessAuth);
+    builder.addCase(activate.rejected, (state, action) => {
       state.authenticationFailed = true;
       state.loading = false;
       state.pendingActivation = true;
-    },
-    [register.fulfilled]: (state, action) => {
+    });
+    builder.addCase(register.fulfilled, (state, action) => {
       state.authenticationFailed = false;
       state.loading = false;
       state.pendingActivation = true;
       state.user = { username: action.payload.username };
-    },
-    [updateProfile.fulfilled]: (state, action) => {
+    });
+    builder.addCase(updateProfile.fulfilled, (state, action) => {
       state.user = action.payload.data;
-    }
+    });
   }
 });
 export const { logout } = userSlice.actions;
