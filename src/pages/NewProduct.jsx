@@ -114,9 +114,18 @@ const NewProduct = () => {
       });
   };
 
+  const checkIfLeaf = (cat) => {
+    if (!cat.subcategories) return true;
+    let ret = true;
+    cat.subcategories.forEach((sub) => {
+      if (categoriesSelected.filter((c) => c.id === sub.id).length !== 0) ret = false;
+    });
+    return ret;
+  };
+
   const create = () => {
     const categoryIds = categoriesSelected
-      .filter((c) => c.subcategories.length === 0)
+      .filter((c) => checkIfLeaf(c))
       .map((c) => c.id);
     const productData = {
       ...product,

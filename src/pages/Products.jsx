@@ -34,7 +34,7 @@ const Products = () => {
   const [attributeSearchData, setAttributeSearchData] = useState(null);
   const [title, setTitle] = useState("");
 
-  const pageSize = 3;
+  const pageSize = 4;
 
   const onSuccessfulResponse = (data) => {
     setTotal({
@@ -57,7 +57,6 @@ const Products = () => {
           })
         );
     } else if (attributeSearchData !== null) {
-      console.log(JSON.stringify(attributeSearchData));
       productsService
         .getByAttributes(
           encodeURI(JSON.stringify(attributeSearchData)),
@@ -88,10 +87,7 @@ const Products = () => {
 
   const apply = (categoryId) => {
     setCategoryId(categoryId);
-    setAttributeSearchData({
-      ...attributeSearchData,
-      attributeId: null
-    });
+    setAttributeSearchData(null);
     setPage({ page: 0 });
   };
 
@@ -138,10 +134,7 @@ const Products = () => {
               onChange={(event) => {
                 setTitle(event.target.value);
                 setCategoryId(null);
-                setAttributeSearchData({
-                  ...attributeSearchData,
-                  attributeId: null
-                });
+                setAttributeSearchData(null);
                 setPage({ page: 0 });
               }}
             ></TextField>

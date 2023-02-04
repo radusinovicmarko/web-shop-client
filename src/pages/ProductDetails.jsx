@@ -339,7 +339,7 @@ const ProductDetails = () => {
                 <Paper elevation={10}>
                   <Typography
                     variant="body1"
-                    sx={{ p: 3, textAlign: "justify" }}
+                    sx={{ p: 3, textAlign: "justify", whiteSpace: "pre-wrap" }}
                   >
                     {product?.description}
                   </Typography>

@@ -37,13 +37,13 @@ const Profile = () => {
   const [tabvalue, setTabValue] = useState("1");
   const [myProducts, setMyProducts] = useState({
     products: [],
-    pageSize: 1,
+    pageSize: 8,
     totalElements: 0,
     totalPages: 0
   });
   const [purchases, setPurchases] = useState({
     products: [],
-    pageSize: 1,
+    pageSize: 8,
     totalElements: 0,
     totalPages: 0
   });

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Box from "@mui/material/Box";
 import Stepper from "@mui/material/Stepper";
 import Step from "@mui/material/Step";
@@ -32,6 +32,33 @@ const Purchase = () => {
   const handlePrev = () =>
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
 
+  useEffect(() => {
+    productsService
+      .get(id)
+      .then((res) => {
+        if (res.data.status !== "Active") {
+          setSnackbarState({
+            open: true,
+            type: "error",
+            message: "Greška."
+          });
+          setTimeout(() => {
+            navigate("/");
+          }, 1500);
+        }
+      })
+      .catch(() => {
+        setSnackbarState({
+          open: true,
+          type: "error",
+          message: "Greška."
+        });
+        setTimeout(() => {
+          navigate("/");
+        }, 1500);
+      });
+  }, []);
+
   const purchase = () => {
     const purchase = {
       purchaseDate: moment(),
@@ -43,7 +70,7 @@ const Purchase = () => {
         setSnackbarState({
           open: true,
           message: "Uspješna kupovina.",
-          type: "sucess"
+          type: "success"
         })
       )
       .catch((err) => {
