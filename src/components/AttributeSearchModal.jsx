@@ -188,7 +188,7 @@ const AttributeSearchModal = (props) => {
               }}
             />
           )}
-          {selectedAttribute?.type === "Integer" && (
+          {selectedAttribute?.type !== "String" && (
             <Stack direction="row" columnGap={1}>
               <TextField
                 type={"number"}
@@ -219,7 +219,7 @@ const AttributeSearchModal = (props) => {
           <Stack direction="column" rowGap={1}>
             <Typography>Izabrani filteri:</Typography>
             {filters.map((filter) => (
-              <Typography key={filter.attribute.id}>{filter.attribute.name} {filter.value !== "" ? filter.value : `${filter.from} - ${filter.to}`}</Typography>
+              <Typography key={filter.attribute.id}>{filter.attribute.name}: {filter.value !== "" ? filter.value : `${filter.from} - ${filter.to}`}</Typography>
             ))}
           </Stack>
           <Stack sx={{ alignItems: "center" }} direction="row" columnGap={1}>
