@@ -172,8 +172,9 @@ const UpdateProfileModal = (props) => {
               required
               fullWidth
               id="contactPhone"
-              label="Telefon"
+              label="Telefon (012/345-678)"
               name="contactPhone"
+              inputProps={{ pattern: "[0-9]{3}/[0-9]{3}-[0-9]{3}" }}
               value={userData?.contactPhone}
               onChange={(event) =>
                 setUserData({ ...userData, contactPhone: event.target.value })

@@ -196,9 +196,10 @@ const Register = () => {
                 required
                 fullWidth
                 id="contactPhone"
-                label="Telefon"
+                label="Telefon (012/345-678)"
                 name="contactPhone"
                 type="tel"
+                inputProps={{ pattern: "[0-9]{3}/[0-9]{3}-[0-9]{3}" }}
                 value={user.contactPhone}
                 onChange={(event) =>
                   setUser({ ...user, contactPhone: event.target.value })
