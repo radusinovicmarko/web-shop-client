@@ -57,6 +57,7 @@ const NewCommentModal = (props) => {
         <br />
         <Button
           size="medium"
+          disabled={content === ""}
           sx={{ m: 1, overflowWrap: "break-word" }}
           variant="outlined"
           color="inherit"

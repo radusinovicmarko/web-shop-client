@@ -188,7 +188,7 @@ const AttributeSearchModal = (props) => {
               }}
             />
           )}
-          {selectedAttribute?.type !== "String" && (
+          {selectedAttribute?.type === "Number" && (
             <Stack direction="row" columnGap={1}>
               <TextField
                 type={"number"}
@@ -196,6 +196,7 @@ const AttributeSearchModal = (props) => {
                 id="outlined-basic"
                 label="Od"
                 variant="outlined"
+                inputProps={{ min: 0 }}
                 value={from}
                 onChange={(event) => {
                   event.preventDefault();
@@ -207,6 +208,7 @@ const AttributeSearchModal = (props) => {
                 size="small"
                 id="outlined-basic"
                 label="Do"
+                inputProps={{ min: 0 }}
                 variant="outlined"
                 value={to}
                 onChange={(event) => {

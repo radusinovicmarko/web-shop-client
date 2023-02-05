@@ -41,7 +41,7 @@ const ProductDetails = () => {
 
   const { authenticated, user } = useSelector((state) => state.user);
 
-  useEffect(() => {
+  const load = () => {
     productsService
       .get(id)
       .then((res) => setProduct(res.data))
@@ -55,6 +55,10 @@ const ProductDetails = () => {
           navigate("/");
         }, 1500);
       });
+  };
+
+  useEffect(() => {
+    load();
   }, []);
 
   const handleChange = (event, newValue) => {
@@ -69,13 +73,14 @@ const ProductDetails = () => {
         userId: user.id,
         productId: product?.id
       })
-      .then(() =>
+      .then(() => {
         setSnackbarState({
           open: true,
           type: "success",
           message: "Dodavanje uspješno!"
-        })
-      )
+        });
+        load();
+      })
       .catch((err) => {
         setSnackbarState({
           open: true,

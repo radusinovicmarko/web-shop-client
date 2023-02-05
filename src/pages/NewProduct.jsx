@@ -297,6 +297,7 @@ const NewProduct = () => {
                       name="price"
                       autoComplete="off"
                       type="number"
+                      inputProps={{ min: 0 }}
                       value={product.price}
                       onChange={(event) =>
                         setProduct({ ...product, price: event.target.value })
@@ -396,6 +397,7 @@ const NewProduct = () => {
                         label={attribute.name}
                         name={attribute.name}
                         type={attribute.type === "String" ? "text" : "number"}
+                        inputProps={{ min: 0 }}
                         value={attributeValues.at(index).value}
                         onChange={(event) => {
                           attributeValues.forEach((a) => {
