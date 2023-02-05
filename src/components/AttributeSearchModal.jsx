@@ -82,7 +82,7 @@ const AttributeSearchModal = (props) => {
     }
   }, [selectedAttributeId]);
 
-  const reset = () => {
+  const reset = (clear) => {
     setCategoryId("");
     setSelectedCategory(null);
     setAttributes([]);
@@ -91,39 +91,39 @@ const AttributeSearchModal = (props) => {
     setValue("");
     setFrom("");
     setTo("");
+    if (clear) setFilters([]);
   };
 
   const apply = () => {
-    if (selectedAttributeId.id !== "") {
-      onApply([
-        ...filters,
-        {
-          attribute: selectedAttribute,
-          value,
-          to,
-          from
-        }
-      ]);
-    } else {
-      if (filters.length === 0) return;
-      onApply(filters);
-    }
+    onApply(filters);
     onClose();
-    reset();
+    reset(true);
   };
 
   const addFilter = () => {
     if (selectedAttributeId.id !== "") {
-      setFilters([
-        ...filters,
-        {
-          attribute: selectedAttribute,
-          value,
-          to,
-          from
-        }
-      ]);
-      reset();
+      if (filters.filter((f) => f.attribute.id === selectedAttributeId.id)) {
+        setFilters([
+          ...filters.filter((f) => f.attribute.id !== selectedAttributeId.id),
+          {
+            attribute: selectedAttribute,
+            value,
+            to,
+            from
+          }
+        ]);
+      } else {
+        setFilters([
+          ...filters,
+          {
+            attribute: selectedAttribute,
+            value,
+            to,
+            from
+          }
+        ]);
+      }
+      reset(false);
     }
   };
 
@@ -224,9 +224,12 @@ const AttributeSearchModal = (props) => {
           </Stack>
           <Stack sx={{ alignItems: "center" }} direction="row" columnGap={1}>
             <Button onClick={addFilter} color="inherit">
-              Dodatni filter
+              Dodajte filter
             </Button>
-            <Button onClick={apply} color="inherit">
+            <Button onClick={() => reset(true)} color="inherit">
+              Obrišite filtere
+            </Button>
+            <Button onClick={apply} color="inherit" disabled={filters.length === 0}>
               Pretraga
             </Button>
           </Stack>
